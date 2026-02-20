@@ -1,48 +1,202 @@
-import { ScrollView, Text, View, TouchableOpacity } from "react-native";
+import { ScrollView, Text, View, Pressable } from "react-native";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
 import { ScreenContainer } from "@/components/screen-container";
+import { AppHeader } from "@/components/app-header";
+import { useColors } from "@/hooks/use-colors";
 
-/**
- * Home Screen - NativeWind Example
- *
- * This template uses NativeWind (Tailwind CSS for React Native).
- * You can use familiar Tailwind classes directly in className props.
- *
- * Key patterns:
- * - Use `className` instead of `style` for most styling
- * - Theme colors: use tokens directly (bg-background, text-foreground, bg-primary, etc.); no dark: prefix needed
- * - Responsive: standard Tailwind breakpoints work on web
- * - Custom colors defined in tailwind.config.js
- */
+interface StatCard {
+  title: string;
+  value: string | number;
+  icon: keyof typeof MaterialIcons.glyphMap;
+  color: string;
+}
+
 export default function HomeScreen() {
+  const colors = useColors();
+
+  const stats: StatCard[] = [
+    {
+      title: "السيارات المتاحة",
+      value: 24,
+      icon: "directions-car",
+      color: colors.primary,
+    },
+    {
+      title: "الطلبات الجديدة",
+      value: 8,
+      icon: "assignment",
+      color: colors.error,
+    },
+    {
+      title: "المحجوزة",
+      value: 12,
+      icon: "schedule",
+      color: colors.warning,
+    },
+    {
+      title: "المبيعة اليوم",
+      value: 3,
+      icon: "trending-up",
+      color: colors.success,
+    },
+  ];
+
   return (
-    <ScreenContainer className="p-6">
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-        <View className="flex-1 gap-8">
-          {/* Hero Section */}
-          <View className="items-center gap-2">
-            <Text className="text-4xl font-bold text-foreground">Welcome</Text>
-            <Text className="text-base text-muted text-center">
-              Edit app/(tabs)/index.tsx to get started
+    <View className="flex-1 bg-background">
+      <AppHeader title="دليل السيارات" />
+
+      <ScreenContainer className="flex-1 p-0">
+        <ScrollView className="flex-1" contentContainerStyle={{ flexGrow: 1 }}>
+          {/* البطاقات الإحصائية */}
+          <View className="px-4 py-6 gap-4">
+            <Text
+              className="text-2xl font-bold text-foreground"
+              style={{ fontFamily: "Cairo" }}
+            >
+              ملخص اليوم
             </Text>
+
+            <View className="gap-3">
+              {stats.map((stat, index) => (
+                <Pressable
+                  key={index}
+                  style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }]}
+                >
+                  <View
+                    className="bg-surface rounded-lg p-4 flex-row items-center justify-between border border-border"
+                    style={{
+                      borderLeftColor: stat.color,
+                      borderLeftWidth: 4,
+                    }}
+                  >
+                    <View className="flex-1">
+                      <Text
+                        className="text-sm text-muted mb-1"
+                        style={{ fontFamily: "Cairo" }}
+                      >
+                        {stat.title}
+                      </Text>
+                      <Text
+                        className="text-2xl font-bold text-foreground"
+                        style={{ fontFamily: "Cairo" }}
+                      >
+                        {stat.value}
+                      </Text>
+                    </View>
+                    <View
+                      className="w-12 h-12 rounded-lg items-center justify-center"
+                      style={{ backgroundColor: stat.color + "20" }}
+                    >
+                      <MaterialIcons name={stat.icon} size={24} color={stat.color} />
+                    </View>
+                  </View>
+                </Pressable>
+              ))}
+            </View>
           </View>
 
-          {/* Example Card */}
-          <View className="w-full max-w-sm self-center bg-surface rounded-2xl p-6 shadow-sm border border-border">
-            <Text className="text-lg font-semibold text-foreground mb-2">NativeWind Ready</Text>
-            <Text className="text-sm text-muted leading-relaxed">
-              Use Tailwind CSS classes directly in your React Native components.
+          {/* الإجراءات السريعة */}
+          <View className="px-4 py-6 gap-4">
+            <Text
+              className="text-xl font-bold text-foreground"
+              style={{ fontFamily: "Cairo" }}
+            >
+              إجراءات سريعة
             </Text>
+
+            <View className="gap-3">
+              <Pressable
+                style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }]}
+              >
+                <View className="bg-primary rounded-lg p-4 flex-row items-center gap-3">
+                  <View
+                    className="w-12 h-12 rounded-lg items-center justify-center"
+                    style={{ backgroundColor: "rgba(255,255,255,0.2)" }}
+                  >
+                    <MaterialIcons name="add" size={24} color="#FFFFFF" />
+                  </View>
+                  <View className="flex-1">
+                    <Text
+                      className="text-base font-bold text-white"
+                      style={{ fontFamily: "Cairo" }}
+                    >
+                      إضافة سيارة جديدة
+                    </Text>
+                    <Text className="text-xs text-white opacity-80">
+                      إضافة سيارة للمخزون
+                    </Text>
+                  </View>
+                  <MaterialIcons name="chevron-left" size={24} color="#FFFFFF" />
+                </View>
+              </Pressable>
+
+              <Pressable
+                style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }]}
+              >
+                <View className="bg-surface rounded-lg p-4 flex-row items-center gap-3 border border-border">
+                  <View
+                    className="w-12 h-12 rounded-lg items-center justify-center"
+                    style={{ backgroundColor: colors.error + "20" }}
+                  >
+                    <MaterialIcons name="assignment" size={24} color={colors.error} />
+                  </View>
+                  <View className="flex-1">
+                    <Text
+                      className="text-base font-bold text-foreground"
+                      style={{ fontFamily: "Cairo" }}
+                    >
+                      طلب جديد
+                    </Text>
+                    <Text className="text-xs text-muted">
+                      إضافة طلب عميل
+                    </Text>
+                  </View>
+                  <MaterialIcons name="chevron-left" size={24} color={colors.muted} />
+                </View>
+              </Pressable>
+            </View>
           </View>
 
-          {/* Example Button */}
-          <View className="items-center">
-            <TouchableOpacity className="bg-primary px-6 py-3 rounded-full active:opacity-80">
-              <Text className="text-background font-semibold">Get Started</Text>
-            </TouchableOpacity>
+          {/* آخر السيارات المضافة */}
+          <View className="px-4 py-6 gap-4 pb-8">
+            <Text
+              className="text-xl font-bold text-foreground"
+              style={{ fontFamily: "Cairo" }}
+            >
+              آخر السيارات المضافة
+            </Text>
+
+            <View className="gap-3">
+              {[
+                { brand: "BMW X5", price: "250,000" },
+                { brand: "Mercedes E-Class", price: "280,000" },
+                { brand: "Audi A6", price: "240,000" },
+              ].map((car, index) => (
+                <Pressable
+                  key={index}
+                  style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }]}
+                >
+                  <View className="bg-surface rounded-lg p-4 flex-row items-center justify-between border border-border">
+                    <View>
+                      <Text
+                        className="text-base font-semibold text-foreground"
+                        style={{ fontFamily: "Cairo" }}
+                      >
+                        {car.brand}
+                      </Text>
+                      <Text className="text-sm text-primary mt-1">
+                        {car.price} ر.س
+                      </Text>
+                    </View>
+                    <MaterialIcons name="chevron-left" size={24} color={colors.muted} />
+                  </View>
+                </Pressable>
+              ))}
+            </View>
           </View>
-        </View>
-      </ScrollView>
-    </ScreenContainer>
+        </ScrollView>
+      </ScreenContainer>
+    </View>
   );
 }

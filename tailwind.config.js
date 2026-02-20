@@ -21,7 +21,10 @@ module.exports = {
   presets: [require("nativewind/preset")],
   theme: {
     extend: {
-      colors: tailwindColors,
+      colors: {
+        ...tailwindColors,
+        tint: tailwindColors.primary,
+      },
     },
   },
   plugins: [

@@ -28,11 +28,11 @@ const schemeFromBundleId = `manus${timestamp}`;
 
 const env = {
   // App branding - update these values directly (do not use env vars)
-  appName: "دليل سيارات السيادة",
-  appSlug: "alsiyada_cars_guide",
+  appName: "دليل السيارات",
+  appSlug: "alsiyada-cars-guide",
   // S3 URL of the app logo - set this to the URL returned by generate_image when creating custom logo
   // Leave empty to use the default icon from assets/images/icon.png
-  logoUrl: "",
+  logoUrl: "https://private-us-east-1.manuscdn.com/sessionFile/N6nHqoBVwsfqtYpUG6SWNE/sandbox/2AlOKBntWMs8ePU6hSc0SC-img-1_1771625482000_na1fn_aWNvbg.png?x-oss-process=image/resize,w_1920,h_1920/format,webp/quality,q_80&Expires=1798761600&Policy=eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly9wcml2YXRlLXVzLWVhc3QtMS5tYW51c2Nkbi5jb20vc2Vzc2lvbkZpbGUvTjZuSHFvQlZ3c2ZxdFlwVUc2U1dORS9zYW5kYm94LzJBbE9LQm50V01zOGVQVTZoU2MwU0MtaW1nLTFfMTc3MTYyNTQ4MjAwMF9uYTFmbl9hV052YmcucG5nP3gtb3NzLXByb2Nlc3M9aW1hZ2UvcmVzaXplLHdfMTkyMCxoXzE5MjAvZm9ybWF0LHdlYnAvcXVhbGl0eSxxXzgwIiwiQ29uZGl0aW9uIjp7IkRhdGVMZXNzVGhhbiI6eyJBV1M6RXBvY2hUaW1lIjoxNzk4NzYxNjAwfX19XX0_&Key-Pair-Id=K2HSFNDJXOU9YS&Signature=RIPe2DIebaszZNBmIsrg1ApTXkkNTAWmv8cu2ea9Y9XjRGbySsiuECD6WmVISyZrh4phxhv3V2RVbE1kta6EyMsVRtmQDg48qWw4nYNeGbUCpdZk29N5Zw0oi-ZzWKXLLUZ1ieha12eWsFgFDAw1EUcrueh0nSmvfAEqXD9ZQmokzfaHvcIH2MPBQEK4ErtwTcO2kqnx0MButKydzJmI0~7R7zqVYQWH~ai3JhP1ZysJY-yQ~PptDosP9wiqXIggAa9Dl-HltA8ewA5VYTsZoyWF32I8MGStSrnsarjZKH502iueKA9GeLpAh35e4aaszFJB2Z3hyVpH3ab9z275Qg__",
   scheme: schemeFromBundleId,
   iosBundleId: bundleId,
   androidPackage: bundleId,
