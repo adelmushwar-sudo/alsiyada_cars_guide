@@ -1,5 +1,6 @@
 import { ScrollView, Text, View, Pressable } from "react-native";
 import { useState } from "react";
+import { useRouter } from "expo-router";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
 import { ScreenContainer } from "@/components/screen-container";
@@ -66,7 +67,12 @@ const SAMPLE_REQUESTS: CustomerRequest[] = [
 
 export default function RequestsScreen() {
   const colors = useColors();
+  const router = useRouter();
   const [selectedStatus, setSelectedStatus] = useState<"all" | "new" | "in-progress" | "completed" | "cancelled">("all");
+
+  const handleMenuPress = () => {
+    router.push("/settings");
+  };
 
   const filteredRequests = selectedStatus === "all"
     ? SAMPLE_REQUESTS
@@ -119,7 +125,7 @@ export default function RequestsScreen() {
 
   return (
     <View className="flex-1 bg-background">
-      <AppHeader title="دليل السيارات" />
+      <AppHeader title="دليل السيارات" onMenuPress={handleMenuPress} />
 
       <ScreenContainer className="flex-1 p-0">
         <ScrollView className="flex-1">

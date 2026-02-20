@@ -1,5 +1,6 @@
 import { ScrollView, Text, View, Pressable, FlatList } from "react-native";
 import { useState } from "react";
+import { useRouter } from "expo-router";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
 import { ScreenContainer } from "@/components/screen-container";
@@ -60,7 +61,12 @@ const SAMPLE_CARS: Car[] = [
 
 export default function OurInventoryScreen() {
   const colors = useColors();
+  const router = useRouter();
   const [selectedLocation, setSelectedLocation] = useState<"all" | "showroom" | "supplier" | "external">("all");
+
+  const handleMenuPress = () => {
+    router.push("/settings");
+  };
 
   const filteredCars = selectedLocation === "all" 
     ? SAMPLE_CARS 
@@ -107,7 +113,7 @@ export default function OurInventoryScreen() {
 
   return (
     <View className="flex-1 bg-background">
-      <AppHeader title="دليل السيارات" />
+      <AppHeader title="دليل السيارات" onMenuPress={handleMenuPress} />
 
       <ScreenContainer className="flex-1 p-0">
         <ScrollView className="flex-1">

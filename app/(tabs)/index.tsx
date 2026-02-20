@@ -1,4 +1,5 @@
 import { ScrollView, Text, View, Pressable } from "react-native";
+import { useRouter } from "expo-router";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
 import { ScreenContainer } from "@/components/screen-container";
@@ -14,6 +15,11 @@ interface StatCard {
 
 export default function HomeScreen() {
   const colors = useColors();
+  const router = useRouter();
+
+  const handleMenuPress = () => {
+    router.push("/settings");
+  };
 
   const stats: StatCard[] = [
     {
@@ -44,7 +50,7 @@ export default function HomeScreen() {
 
   return (
     <View className="flex-1 bg-background">
-      <AppHeader title="دليل السيارات" />
+      <AppHeader title="دليل السيارات" onMenuPress={handleMenuPress} />
 
       <ScreenContainer className="flex-1 p-0">
         <ScrollView className="flex-1" contentContainerStyle={{ flexGrow: 1 }}>

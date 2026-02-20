@@ -10,6 +10,7 @@ interface AppHeaderProps {
   onFavoritesPress?: () => void;
   onNotificationsPress?: () => void;
   title?: string;
+  showMenu?: boolean;
 }
 
 export function AppHeader({
@@ -18,6 +19,7 @@ export function AppHeader({
   onFavoritesPress,
   onNotificationsPress,
   title = "دليل السيارات",
+  showMenu = true,
 }: AppHeaderProps) {
   const colors = useColors();
   const insets = useSafeAreaInsets();
@@ -32,18 +34,20 @@ export function AppHeader({
       <View className="flex-row items-center justify-between px-4 py-3 h-16">
         {/* الجانب الأيمن - القائمة والعنوان */}
         <View className="flex-row items-center flex-1 gap-3">
-          <Pressable
-            onPress={onMenuPress}
-            style={({ pressed }) => [
-              { opacity: pressed ? 0.6 : 1 },
-            ]}
-          >
-            <MaterialIcons
-              name="menu"
-              size={28}
-              color={colors.primary}
-            />
-          </Pressable>
+          {showMenu && (
+            <Pressable
+              onPress={onMenuPress}
+              style={({ pressed }) => [
+                { opacity: pressed ? 0.6 : 1 },
+              ]}
+            >
+              <MaterialIcons
+                name="menu"
+                size={28}
+                color={colors.primary}
+              />
+            </Pressable>
+          )}
           <Text
             className="text-xl font-bold text-primary"
             style={{ fontFamily: "Cairo" }}
@@ -53,46 +57,48 @@ export function AppHeader({
         </View>
 
         {/* الجانب الأيسر - الأيقونات */}
-        <View className="flex-row items-center gap-2">
-          <Pressable
-            onPress={onFavoritesPress}
-            style={({ pressed }) => [
-              { opacity: pressed ? 0.6 : 1 },
-            ]}
-          >
-            <MaterialIcons
-              name="favorite-border"
-              size={24}
-              color={colors.primary}
-            />
-          </Pressable>
+        {showMenu && (
+          <View className="flex-row items-center gap-2">
+            <Pressable
+              onPress={onFavoritesPress}
+              style={({ pressed }) => [
+                { opacity: pressed ? 0.6 : 1 },
+              ]}
+            >
+              <MaterialIcons
+                name="favorite-border"
+                size={24}
+                color={colors.primary}
+              />
+            </Pressable>
 
-          <Pressable
-            onPress={onNotificationsPress}
-            style={({ pressed }) => [
-              { opacity: pressed ? 0.6 : 1 },
-            ]}
-          >
-            <MaterialIcons
-              name="notifications-none"
-              size={24}
-              color={colors.primary}
-            />
-          </Pressable>
+            <Pressable
+              onPress={onNotificationsPress}
+              style={({ pressed }) => [
+                { opacity: pressed ? 0.6 : 1 },
+              ]}
+            >
+              <MaterialIcons
+                name="notifications-none"
+                size={24}
+                color={colors.primary}
+              />
+            </Pressable>
 
-          <Pressable
-            onPress={onSearchPress}
-            style={({ pressed }) => [
-              { opacity: pressed ? 0.6 : 1 },
-            ]}
-          >
-            <MaterialIcons
-              name="search"
-              size={24}
-              color={colors.primary}
-            />
-          </Pressable>
-        </View>
+            <Pressable
+              onPress={onSearchPress}
+              style={({ pressed }) => [
+                { opacity: pressed ? 0.6 : 1 },
+              ]}
+            >
+              <MaterialIcons
+                name="search"
+                size={24}
+                color={colors.primary}
+              />
+            </Pressable>
+          </View>
+        )}
       </View>
     </View>
   );
