@@ -21,8 +21,9 @@ export function FloatingActionButton({
     <View
       style={{
         position: "absolute",
-        bottom: 90 + insets.bottom,
+        bottom: 72 + insets.bottom,
         right: 20,
+        zIndex: 50,
       }}
     >
       <Pressable

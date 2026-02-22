@@ -78,7 +78,7 @@ export default function SettingsScreen() {
       }]}
     >
       <View
-        className="flex-row items-center justify-between px-4 py-3 border-b border-border"
+        className="flex-row items-center justify-between px-3 py-2.5 border-b border-border"
         style={{
           backgroundColor:
             themeMode === mode ? colors.primary + "10" : "transparent",
@@ -86,17 +86,17 @@ export default function SettingsScreen() {
           transitionDuration: "300ms",
         }}
       >
-        <View className="flex-row items-center gap-3 flex-1">
-          <MaterialIcons name={icon as any} size={24} color={colors.primary} />
+        <View className="flex-row items-center gap-2.5 flex-1">
+          <MaterialIcons name={icon as any} size={20} color={colors.primary} />
           <Text
-            className="text-base font-semibold text-foreground"
+            className="text-sm font-semibold text-foreground"
             style={{ fontFamily: "Cairo" }}
           >
             {label}
           </Text>
         </View>
         {themeMode === mode && (
-          <MaterialIcons name="check-circle" size={24} color={colors.primary} />
+          <MaterialIcons name="check-circle" size={20} color={colors.primary} />
         )}
       </View>
     </Pressable>
@@ -108,7 +108,7 @@ export default function SettingsScreen() {
       transitionDuration: "300ms",
     }}>
       {/* رأس الصفحة مع زر الرجوع */}
-      <View className="bg-background border-b border-border px-3 py-2 flex-row items-center gap-3 h-12" style={{
+      <View className="bg-background border-b border-border px-3 py-2 flex-row items-center gap-2 h-12" style={{
         transitionProperty: Platform.OS === "web" ? "background-color, border-color" : "none",
         transitionDuration: "300ms",
       }}>
@@ -116,10 +116,10 @@ export default function SettingsScreen() {
           onPress={() => router.back()}
           style={({ pressed }) => [{ opacity: pressed ? 0.6 : 1 }]}
         >
-          <MaterialIcons name="arrow-back" size={24} color={colors.primary} />
+          <MaterialIcons name="arrow-back" size={22} color={colors.primary} />
         </Pressable>
         <Text
-          className="text-lg font-bold text-foreground flex-1"
+          className="text-base font-bold text-foreground flex-1"
           style={{ fontFamily: "Cairo" }}
         >
           الإعدادات
@@ -129,50 +129,51 @@ export default function SettingsScreen() {
       <ScreenContainer className="flex-1 p-0">
         <ScrollView className="flex-1" contentContainerStyle={{ flexGrow: 1 }}>
           {/* بطاقة بيانات المستخدم */}
-          <View className="px-4 py-6">
+          <View className="px-3 py-4">
             <Pressable style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }]}>
-              <View className="bg-surface rounded-lg p-4 flex-row items-center gap-4 border border-border" style={{
+              <View className="bg-surface rounded-lg p-3 flex-row items-center gap-3 border border-border" style={{
                 transitionProperty: Platform.OS === "web" ? "background-color, border-color" : "none",
                 transitionDuration: "300ms",
               }}>
                 {/* صورة المستخدم */}
                 <View
-                  className="w-16 h-16 rounded-full items-center justify-center"
+                  className="w-14 h-14 rounded-full items-center justify-center flex-shrink-0"
                   style={{ 
                     backgroundColor: colors.primary,
                     transitionProperty: Platform.OS === "web" ? "background-color" : "none",
                     transitionDuration: "300ms",
                   }}
                 >
-                  <MaterialIcons name="person" size={32} color="#FFFFFF" />
+                  <MaterialIcons name="person" size={28} color="#FFFFFF" />
                 </View>
 
                 {/* بيانات المستخدم */}
-                <View className="flex-1">
+                <View className="flex-1 min-w-0">
                   <Text
-                    className="text-lg font-bold text-foreground"
+                    className="text-base font-bold text-foreground"
                     style={{ fontFamily: "Cairo" }}
+                    numberOfLines={1}
                   >
                     أحمد محمد
                   </Text>
-                  <Text className="text-sm text-muted mt-1">
+                  <Text className="text-xs text-muted mt-0.5" numberOfLines={1}>
                     موظف مبيعات
                   </Text>
-                  <Text className="text-xs text-muted mt-1">
-                    ahmed.mohammad@alsiyada.com
+                  <Text className="text-xs text-muted mt-0.5" numberOfLines={1}>
+                    ahmed@alsiyada.com
                   </Text>
                 </View>
 
                 {/* أيقونة التعديل */}
-                <MaterialIcons name="edit" size={24} color={colors.primary} />
+                <MaterialIcons name="edit" size={20} color={colors.primary} />
               </View>
             </Pressable>
           </View>
 
           {/* بطاقة إعدادات الحساب */}
-          <View className="px-4 py-4">
+          <View className="px-3 py-3">
             <Text
-              className="text-lg font-bold text-foreground mb-3"
+              className="text-sm font-bold text-foreground mb-2"
               style={{ fontFamily: "Cairo" }}
             >
               إعدادات الحساب
@@ -188,10 +189,10 @@ export default function SettingsScreen() {
                   transitionDuration: "150ms",
                 }]}
               >
-                <View className="flex-row items-center justify-between px-4 py-4 border-b border-border">
-                  <View className="flex-row items-center gap-3 flex-1">
+                <View className="flex-row items-center justify-between px-3 py-3 border-b border-border">
+                  <View className="flex-row items-center gap-2.5 flex-1">
                     <View
-                      className="w-10 h-10 rounded-lg items-center justify-center"
+                      className="w-9 h-9 rounded-lg items-center justify-center"
                       style={{ 
                         backgroundColor: colors.primary + "20",
                         transitionProperty: Platform.OS === "web" ? "background-color" : "none",
@@ -200,25 +201,26 @@ export default function SettingsScreen() {
                     >
                       <MaterialIcons
                         name="lock"
-                        size={20}
+                        size={18}
                         color={colors.primary}
                       />
                     </View>
-                    <View>
+                    <View className="flex-1 min-w-0">
                       <Text
-                        className="text-base font-semibold text-foreground"
+                        className="text-sm font-semibold text-foreground"
                         style={{ fontFamily: "Cairo" }}
+                        numberOfLines={1}
                       >
                         تغيير كلمة المرور
                       </Text>
-                      <Text className="text-xs text-muted mt-1">
-                        تحديث كلمة المرور الخاصة بك
+                      <Text className="text-xs text-muted mt-0.5" numberOfLines={1}>
+                        تحديث كلمة المرور
                       </Text>
                     </View>
                   </View>
                   <MaterialIcons
                     name="chevron-right"
-                    size={24}
+                    size={20}
                     color={colors.muted}
                   />
                 </View>
@@ -231,10 +233,10 @@ export default function SettingsScreen() {
                   transitionDuration: "150ms",
                 }]}
               >
-                <View className="flex-row items-center justify-between px-4 py-4">
-                  <View className="flex-row items-center gap-3 flex-1">
+                <View className="flex-row items-center justify-between px-3 py-3">
+                  <View className="flex-row items-center gap-2.5 flex-1">
                     <View
-                      className="w-10 h-10 rounded-lg items-center justify-center"
+                      className="w-9 h-9 rounded-lg items-center justify-center"
                       style={{ 
                         backgroundColor: colors.primary + "20",
                         transitionProperty: Platform.OS === "web" ? "background-color" : "none",
@@ -243,25 +245,26 @@ export default function SettingsScreen() {
                     >
                       <MaterialIcons
                         name="notifications"
-                        size={20}
+                        size={18}
                         color={colors.primary}
                       />
                     </View>
-                    <View>
+                    <View className="flex-1 min-w-0">
                       <Text
-                        className="text-base font-semibold text-foreground"
+                        className="text-sm font-semibold text-foreground"
                         style={{ fontFamily: "Cairo" }}
+                        numberOfLines={1}
                       >
                         الإشعارات
                       </Text>
-                      <Text className="text-xs text-muted mt-1">
-                        إدارة إعدادات الإشعارات
+                      <Text className="text-xs text-muted mt-0.5" numberOfLines={1}>
+                        إدارة الإشعارات
                       </Text>
                     </View>
                   </View>
                   <MaterialIcons
                     name="chevron-right"
-                    size={24}
+                    size={20}
                     color={colors.muted}
                   />
                 </View>
@@ -270,9 +273,9 @@ export default function SettingsScreen() {
           </View>
 
           {/* بطاقة التحكم بالمظهر */}
-          <View className="px-4 py-4">
+          <View className="px-3 py-3">
             <Text
-              className="text-lg font-bold text-foreground mb-3"
+              className="text-sm font-bold text-foreground mb-2"
               style={{ fontFamily: "Cairo" }}
             >
               المظهر
@@ -288,9 +291,9 @@ export default function SettingsScreen() {
           </View>
 
           {/* بطاقة الأرشيف */}
-          <View className="px-4 py-4">
+          <View className="px-3 py-3">
             <Text
-              className="text-lg font-bold text-foreground mb-3"
+              className="text-sm font-bold text-foreground mb-2"
               style={{ fontFamily: "Cairo" }}
             >
               البيانات والخصوصية
@@ -306,10 +309,10 @@ export default function SettingsScreen() {
                   transitionDuration: "150ms",
                 }]}
               >
-                <View className="flex-row items-center justify-between px-4 py-4 border-b border-border">
-                  <View className="flex-row items-center gap-3 flex-1">
+                <View className="flex-row items-center justify-between px-3 py-3 border-b border-border">
+                  <View className="flex-row items-center gap-2.5 flex-1">
                     <View
-                      className="w-10 h-10 rounded-lg items-center justify-center"
+                      className="w-9 h-9 rounded-lg items-center justify-center"
                       style={{ 
                         backgroundColor: colors.warning + "20",
                         transitionProperty: Platform.OS === "web" ? "background-color" : "none",
@@ -318,25 +321,26 @@ export default function SettingsScreen() {
                     >
                       <MaterialIcons
                         name="archive"
-                        size={20}
+                        size={18}
                         color={colors.warning}
                       />
                     </View>
-                    <View>
+                    <View className="flex-1 min-w-0">
                       <Text
-                        className="text-base font-semibold text-foreground"
+                        className="text-sm font-semibold text-foreground"
                         style={{ fontFamily: "Cairo" }}
+                        numberOfLines={1}
                       >
                         الأرشيف
                       </Text>
-                      <Text className="text-xs text-muted mt-1">
+                      <Text className="text-xs text-muted mt-0.5" numberOfLines={1}>
                         عرض البيانات المؤرشفة
                       </Text>
                     </View>
                   </View>
                   <MaterialIcons
                     name="chevron-right"
-                    size={24}
+                    size={20}
                     color={colors.muted}
                   />
                 </View>
@@ -349,10 +353,10 @@ export default function SettingsScreen() {
                   transitionDuration: "150ms",
                 }]}
               >
-                <View className="flex-row items-center justify-between px-4 py-4">
-                  <View className="flex-row items-center gap-3 flex-1">
+                <View className="flex-row items-center justify-between px-3 py-3">
+                  <View className="flex-row items-center gap-2.5 flex-1">
                     <View
-                      className="w-10 h-10 rounded-lg items-center justify-center"
+                      className="w-9 h-9 rounded-lg items-center justify-center"
                       style={{ 
                         backgroundColor: colors.primary + "20",
                         transitionProperty: Platform.OS === "web" ? "background-color" : "none",
@@ -361,25 +365,26 @@ export default function SettingsScreen() {
                     >
                       <MaterialIcons
                         name="privacy-tip"
-                        size={20}
+                        size={18}
                         color={colors.primary}
                       />
                     </View>
-                    <View>
+                    <View className="flex-1 min-w-0">
                       <Text
-                        className="text-base font-semibold text-foreground"
+                        className="text-sm font-semibold text-foreground"
                         style={{ fontFamily: "Cairo" }}
+                        numberOfLines={1}
                       >
                         سياسة الخصوصية
                       </Text>
-                      <Text className="text-xs text-muted mt-1">
-                        اقرأ سياسة الخصوصية الخاصة بنا
+                      <Text className="text-xs text-muted mt-0.5" numberOfLines={1}>
+                        اقرأ سياسة الخصوصية
                       </Text>
                     </View>
                   </View>
                   <MaterialIcons
                     name="chevron-right"
-                    size={24}
+                    size={20}
                     color={colors.muted}
                   />
                 </View>
@@ -388,25 +393,25 @@ export default function SettingsScreen() {
           </View>
 
           {/* معلومات التطبيق */}
-          <View className="px-4 py-4">
-            <View className="bg-surface rounded-lg border border-border p-4" style={{
+          <View className="px-3 py-3">
+            <View className="bg-surface rounded-lg border border-border p-3" style={{
               transitionProperty: Platform.OS === "web" ? "background-color, border-color" : "none",
               transitionDuration: "300ms",
             }}>
               <Text
-                className="text-sm text-muted text-center"
+                className="text-xs text-muted text-center"
                 style={{ fontFamily: "Cairo" }}
               >
                 دليل السيارات
               </Text>
-              <Text className="text-xs text-muted text-center mt-2">
+              <Text className="text-xs text-muted text-center mt-1">
                 الإصدار 1.0.0
               </Text>
             </View>
           </View>
 
           {/* زر تسجيل الخروج */}
-          <View className="px-4 py-6 pb-8">
+          <View className="px-3 py-4 pb-6">
             <Pressable
               onPress={handleLogout}
               style={({ pressed }) => [{ 
@@ -415,14 +420,14 @@ export default function SettingsScreen() {
                 transitionDuration: "150ms",
               }]}
             >
-              <View className="bg-error rounded-lg p-4 items-center" style={{
+              <View className="bg-error rounded-lg p-3 items-center" style={{
                 transitionProperty: Platform.OS === "web" ? "background-color" : "none",
                 transitionDuration: "300ms",
               }}>
                 <View className="flex-row items-center gap-2">
-                  <MaterialIcons name="logout" size={24} color="#FFFFFF" />
+                  <MaterialIcons name="logout" size={20} color="#FFFFFF" />
                   <Text
-                    className="text-lg font-bold text-white"
+                    className="text-sm font-bold text-white"
                     style={{ fontFamily: "Cairo" }}
                   >
                     تسجيل الخروج
