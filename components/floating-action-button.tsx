@@ -21,30 +21,30 @@ export function FloatingActionButton({
     <View
       style={{
         position: "absolute",
-        bottom: 80 + insets.bottom,
-        right: 16,
+        bottom: 90 + insets.bottom,
+        right: 20,
       }}
     >
       <Pressable
         onPress={onPress}
         style={({ pressed }) => [
           {
-            opacity: pressed ? 0.8 : 1,
-            transform: [{ scale: pressed ? 0.95 : 1 }],
+            opacity: pressed ? 0.85 : 1,
+            transform: [{ scale: pressed ? 0.92 : 1 }],
             transitionProperty: Platform.OS === "web" ? "opacity, transform" : "none",
             transitionDuration: "150ms",
           },
         ]}
       >
         <View
-          className="w-14 h-14 rounded-full items-center justify-center shadow-lg"
+          className="w-16 h-16 rounded-full items-center justify-center shadow-lg"
           style={{
             backgroundColor: colors.primary,
-            elevation: 8,
+            elevation: 12,
             shadowColor: colors.primary,
-            shadowOffset: { width: 0, height: 4 },
-            shadowOpacity: 0.3,
-            shadowRadius: 8,
+            shadowOffset: { width: 0, height: 6 },
+            shadowOpacity: 0.4,
+            shadowRadius: 12,
             transitionProperty: Platform.OS === "web" ? "background-color, box-shadow" : "none",
             transitionDuration: "300ms",
           }}

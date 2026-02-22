@@ -7,6 +7,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
 import { useColorScheme } from "@/hooks/use-color-scheme";
+import { useThemeContext } from "@/lib/theme-provider";
 
 type ThemeMode = "light" | "dark" | "system";
 
@@ -14,6 +15,7 @@ export default function SettingsScreen() {
   const colors = useColors();
   const router = useRouter();
   const colorScheme = useColorScheme();
+  const { setColorScheme } = useThemeContext();
   const [themeMode, setThemeMode] = useState<ThemeMode>("system");
   const [isLoaded, setIsLoaded] = useState(false);
 
@@ -24,6 +26,12 @@ export default function SettingsScreen() {
         const savedTheme = await AsyncStorage.getItem("themeMode");
         if (savedTheme && (savedTheme === "light" || savedTheme === "dark" || savedTheme === "system")) {
           setThemeMode(savedTheme as ThemeMode);
+          // تطبيق المظهر المحفوظ فوراً
+          if (savedTheme === "system") {
+            setColorScheme(colorScheme ?? "light");
+          } else {
+            setColorScheme(savedTheme as "light" | "dark");
+          }
         }
       } catch (error) {
         console.error("Failed to load theme:", error);
@@ -46,18 +54,14 @@ export default function SettingsScreen() {
       await AsyncStorage.setItem("themeMode", mode);
       setThemeMode(mode);
 
-      // تطبيق المظهر على النظام
+      // تطبيق المظهر فوراً
       if (mode === "dark") {
-        document.documentElement.setAttribute("data-theme", "dark");
+        setColorScheme("dark");
       } else if (mode === "light") {
-        document.documentElement.removeAttribute("data-theme");
+        setColorScheme("light");
       } else {
         // system mode
-        if (colorScheme === "dark") {
-          document.documentElement.setAttribute("data-theme", "dark");
-        } else {
-          document.documentElement.removeAttribute("data-theme");
-        }
+        setColorScheme(colorScheme ?? "light");
       }
     } catch (error) {
       console.error("Failed to save theme:", error);
@@ -104,7 +108,7 @@ export default function SettingsScreen() {
       transitionDuration: "300ms",
     }}>
       {/* رأس الصفحة مع زر الرجوع */}
-      <View className="bg-background border-b border-border px-4 py-4 flex-row items-center gap-3" style={{
+      <View className="bg-background border-b border-border px-3 py-2 flex-row items-center gap-3 h-12" style={{
         transitionProperty: Platform.OS === "web" ? "background-color, border-color" : "none",
         transitionDuration: "300ms",
       }}>
@@ -112,10 +116,10 @@ export default function SettingsScreen() {
           onPress={() => router.back()}
           style={({ pressed }) => [{ opacity: pressed ? 0.6 : 1 }]}
         >
-          <MaterialIcons name="arrow-back" size={28} color={colors.primary} />
+          <MaterialIcons name="arrow-back" size={24} color={colors.primary} />
         </Pressable>
         <Text
-          className="text-2xl font-bold text-foreground flex-1"
+          className="text-lg font-bold text-foreground flex-1"
           style={{ fontFamily: "Cairo" }}
         >
           الإعدادات
