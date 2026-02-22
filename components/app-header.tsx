@@ -29,6 +29,10 @@ export function AppHeader({
       className="bg-background border-b border-border"
       style={{
         paddingTop: insets.top,
+        // انتقال سلس عند تغيير الألوان
+        transitionProperty: Platform.OS === "web" ? "background-color, border-color" : "none",
+        transitionDuration: Platform.OS === "web" ? "300ms" : "0ms",
+        transitionTimingFunction: "ease-in-out",
       }}
     >
       <View className="flex-row items-center justify-between px-3 py-2 h-12">
@@ -38,7 +42,11 @@ export function AppHeader({
             <Pressable
               onPress={onMenuPress}
               style={({ pressed }) => [
-                { opacity: pressed ? 0.6 : 1 },
+                {
+                  opacity: pressed ? 0.6 : 1,
+                  transitionProperty: Platform.OS === "web" ? "opacity" : "none",
+                  transitionDuration: "150ms",
+                },
               ]}
             >
               <MaterialIcons
@@ -50,7 +58,11 @@ export function AppHeader({
           )}
           <Text
             className="text-lg font-bold text-primary"
-            style={{ fontFamily: "Cairo" }}
+            style={{
+              fontFamily: "Cairo",
+              transitionProperty: Platform.OS === "web" ? "color" : "none",
+              transitionDuration: "300ms",
+            }}
             numberOfLines={1}
           >
             {title}
@@ -63,7 +75,11 @@ export function AppHeader({
             <Pressable
               onPress={onFavoritesPress}
               style={({ pressed }) => [
-                { opacity: pressed ? 0.6 : 1 },
+                {
+                  opacity: pressed ? 0.6 : 1,
+                  transitionProperty: Platform.OS === "web" ? "opacity" : "none",
+                  transitionDuration: "150ms",
+                },
               ]}
             >
               <MaterialIcons
@@ -76,7 +92,11 @@ export function AppHeader({
             <Pressable
               onPress={onNotificationsPress}
               style={({ pressed }) => [
-                { opacity: pressed ? 0.6 : 1 },
+                {
+                  opacity: pressed ? 0.6 : 1,
+                  transitionProperty: Platform.OS === "web" ? "opacity" : "none",
+                  transitionDuration: "150ms",
+                },
               ]}
             >
               <MaterialIcons
@@ -89,7 +109,11 @@ export function AppHeader({
             <Pressable
               onPress={onSearchPress}
               style={({ pressed }) => [
-                { opacity: pressed ? 0.6 : 1 },
+                {
+                  opacity: pressed ? 0.6 : 1,
+                  transitionProperty: Platform.OS === "web" ? "opacity" : "none",
+                  transitionDuration: "150ms",
+                },
               ]}
             >
               <MaterialIcons

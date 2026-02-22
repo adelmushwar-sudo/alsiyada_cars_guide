@@ -1,4 +1,4 @@
-import { ScrollView, Text, View, Pressable, Image } from "react-native";
+import { ScrollView, Text, View, Pressable, Image, Platform } from "react-native";
 import { useRouter } from "expo-router";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useState, useEffect } from "react";
@@ -64,24 +64,33 @@ export default function SettingsScreen() {
     }
   };
 
-  const renderThemeOption = (mode: ThemeMode, label: string) => (
+  const renderThemeOption = (mode: ThemeMode, label: string, icon: string) => (
     <Pressable
       onPress={() => handleThemeChange(mode)}
-      style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }]}
+      style={({ pressed }) => [{ 
+        opacity: pressed ? 0.8 : 1,
+        transitionProperty: Platform.OS === "web" ? "opacity" : "none",
+        transitionDuration: "150ms",
+      }]}
     >
       <View
         className="flex-row items-center justify-between px-4 py-3 border-b border-border"
         style={{
           backgroundColor:
             themeMode === mode ? colors.primary + "10" : "transparent",
+          transitionProperty: Platform.OS === "web" ? "background-color" : "none",
+          transitionDuration: "300ms",
         }}
       >
-        <Text
-          className="text-base font-semibold text-foreground"
-          style={{ fontFamily: "Cairo" }}
-        >
-          {label}
-        </Text>
+        <View className="flex-row items-center gap-3 flex-1">
+          <MaterialIcons name={icon as any} size={24} color={colors.primary} />
+          <Text
+            className="text-base font-semibold text-foreground"
+            style={{ fontFamily: "Cairo" }}
+          >
+            {label}
+          </Text>
+        </View>
         {themeMode === mode && (
           <MaterialIcons name="check-circle" size={24} color={colors.primary} />
         )}
@@ -90,9 +99,15 @@ export default function SettingsScreen() {
   );
 
   return (
-    <View className="flex-1 bg-background">
+    <View className="flex-1 bg-background" style={{
+      transitionProperty: Platform.OS === "web" ? "background-color" : "none",
+      transitionDuration: "300ms",
+    }}>
       {/* رأس الصفحة مع زر الرجوع */}
-      <View className="bg-background border-b border-border px-4 py-4 flex-row items-center gap-3">
+      <View className="bg-background border-b border-border px-4 py-4 flex-row items-center gap-3" style={{
+        transitionProperty: Platform.OS === "web" ? "background-color, border-color" : "none",
+        transitionDuration: "300ms",
+      }}>
         <Pressable
           onPress={() => router.back()}
           style={({ pressed }) => [{ opacity: pressed ? 0.6 : 1 }]}
@@ -112,11 +127,18 @@ export default function SettingsScreen() {
           {/* بطاقة بيانات المستخدم */}
           <View className="px-4 py-6">
             <Pressable style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }]}>
-              <View className="bg-surface rounded-lg p-4 flex-row items-center gap-4 border border-border">
+              <View className="bg-surface rounded-lg p-4 flex-row items-center gap-4 border border-border" style={{
+                transitionProperty: Platform.OS === "web" ? "background-color, border-color" : "none",
+                transitionDuration: "300ms",
+              }}>
                 {/* صورة المستخدم */}
                 <View
                   className="w-16 h-16 rounded-full items-center justify-center"
-                  style={{ backgroundColor: colors.primary }}
+                  style={{ 
+                    backgroundColor: colors.primary,
+                    transitionProperty: Platform.OS === "web" ? "background-color" : "none",
+                    transitionDuration: "300ms",
+                  }}
                 >
                   <MaterialIcons name="person" size={32} color="#FFFFFF" />
                 </View>
@@ -151,15 +173,26 @@ export default function SettingsScreen() {
             >
               إعدادات الحساب
             </Text>
-            <View className="bg-surface rounded-lg border border-border overflow-hidden">
+            <View className="bg-surface rounded-lg border border-border overflow-hidden" style={{
+              transitionProperty: Platform.OS === "web" ? "background-color, border-color" : "none",
+              transitionDuration: "300ms",
+            }}>
               <Pressable
-                style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }]}
+                style={({ pressed }) => [{ 
+                  opacity: pressed ? 0.8 : 1,
+                  transitionProperty: Platform.OS === "web" ? "opacity" : "none",
+                  transitionDuration: "150ms",
+                }]}
               >
                 <View className="flex-row items-center justify-between px-4 py-4 border-b border-border">
                   <View className="flex-row items-center gap-3 flex-1">
                     <View
                       className="w-10 h-10 rounded-lg items-center justify-center"
-                      style={{ backgroundColor: colors.primary + "20" }}
+                      style={{ 
+                        backgroundColor: colors.primary + "20",
+                        transitionProperty: Platform.OS === "web" ? "background-color" : "none",
+                        transitionDuration: "300ms",
+                      }}
                     >
                       <MaterialIcons
                         name="lock"
@@ -188,13 +221,21 @@ export default function SettingsScreen() {
               </Pressable>
 
               <Pressable
-                style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }]}
+                style={({ pressed }) => [{ 
+                  opacity: pressed ? 0.8 : 1,
+                  transitionProperty: Platform.OS === "web" ? "opacity" : "none",
+                  transitionDuration: "150ms",
+                }]}
               >
                 <View className="flex-row items-center justify-between px-4 py-4">
                   <View className="flex-row items-center gap-3 flex-1">
                     <View
                       className="w-10 h-10 rounded-lg items-center justify-center"
-                      style={{ backgroundColor: colors.primary + "20" }}
+                      style={{ 
+                        backgroundColor: colors.primary + "20",
+                        transitionProperty: Platform.OS === "web" ? "background-color" : "none",
+                        transitionDuration: "300ms",
+                      }}
                     >
                       <MaterialIcons
                         name="notifications"
@@ -232,10 +273,13 @@ export default function SettingsScreen() {
             >
               المظهر
             </Text>
-            <View className="bg-surface rounded-lg border border-border overflow-hidden">
-              {renderThemeOption("light", "فاتح")}
-              {renderThemeOption("dark", "داكن")}
-              {renderThemeOption("system", "اتباع النظام")}
+            <View className="bg-surface rounded-lg border border-border overflow-hidden" style={{
+              transitionProperty: Platform.OS === "web" ? "background-color, border-color" : "none",
+              transitionDuration: "300ms",
+            }}>
+              {renderThemeOption("light", "وضع النهار", "light-mode")}
+              {renderThemeOption("dark", "وضع الليل", "dark-mode")}
+              {renderThemeOption("system", "اتباع النظام", "settings")}
             </View>
           </View>
 
@@ -247,15 +291,26 @@ export default function SettingsScreen() {
             >
               البيانات والخصوصية
             </Text>
-            <View className="bg-surface rounded-lg border border-border overflow-hidden">
+            <View className="bg-surface rounded-lg border border-border overflow-hidden" style={{
+              transitionProperty: Platform.OS === "web" ? "background-color, border-color" : "none",
+              transitionDuration: "300ms",
+            }}>
               <Pressable
-                style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }]}
+                style={({ pressed }) => [{ 
+                  opacity: pressed ? 0.8 : 1,
+                  transitionProperty: Platform.OS === "web" ? "opacity" : "none",
+                  transitionDuration: "150ms",
+                }]}
               >
                 <View className="flex-row items-center justify-between px-4 py-4 border-b border-border">
                   <View className="flex-row items-center gap-3 flex-1">
                     <View
                       className="w-10 h-10 rounded-lg items-center justify-center"
-                      style={{ backgroundColor: colors.warning + "20" }}
+                      style={{ 
+                        backgroundColor: colors.warning + "20",
+                        transitionProperty: Platform.OS === "web" ? "background-color" : "none",
+                        transitionDuration: "300ms",
+                      }}
                     >
                       <MaterialIcons
                         name="archive"
@@ -284,13 +339,21 @@ export default function SettingsScreen() {
               </Pressable>
 
               <Pressable
-                style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }]}
+                style={({ pressed }) => [{ 
+                  opacity: pressed ? 0.8 : 1,
+                  transitionProperty: Platform.OS === "web" ? "opacity" : "none",
+                  transitionDuration: "150ms",
+                }]}
               >
                 <View className="flex-row items-center justify-between px-4 py-4">
                   <View className="flex-row items-center gap-3 flex-1">
                     <View
                       className="w-10 h-10 rounded-lg items-center justify-center"
-                      style={{ backgroundColor: colors.primary + "20" }}
+                      style={{ 
+                        backgroundColor: colors.primary + "20",
+                        transitionProperty: Platform.OS === "web" ? "background-color" : "none",
+                        transitionDuration: "300ms",
+                      }}
                     >
                       <MaterialIcons
                         name="privacy-tip"
@@ -322,7 +385,10 @@ export default function SettingsScreen() {
 
           {/* معلومات التطبيق */}
           <View className="px-4 py-4">
-            <View className="bg-surface rounded-lg border border-border p-4">
+            <View className="bg-surface rounded-lg border border-border p-4" style={{
+              transitionProperty: Platform.OS === "web" ? "background-color, border-color" : "none",
+              transitionDuration: "300ms",
+            }}>
               <Text
                 className="text-sm text-muted text-center"
                 style={{ fontFamily: "Cairo" }}
@@ -339,9 +405,16 @@ export default function SettingsScreen() {
           <View className="px-4 py-6 pb-8">
             <Pressable
               onPress={handleLogout}
-              style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }]}
+              style={({ pressed }) => [{ 
+                opacity: pressed ? 0.8 : 1,
+                transitionProperty: Platform.OS === "web" ? "opacity" : "none",
+                transitionDuration: "150ms",
+              }]}
             >
-              <View className="bg-error rounded-lg p-4 items-center">
+              <View className="bg-error rounded-lg p-4 items-center" style={{
+                transitionProperty: Platform.OS === "web" ? "background-color" : "none",
+                transitionDuration: "300ms",
+              }}>
                 <View className="flex-row items-center gap-2">
                   <MaterialIcons name="logout" size={24} color="#FFFFFF" />
                   <Text

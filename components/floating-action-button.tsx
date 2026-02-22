@@ -1,4 +1,4 @@
-import { Pressable, View } from "react-native";
+import { Pressable, View, Platform } from "react-native";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useColors } from "@/hooks/use-colors";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -31,6 +31,8 @@ export function FloatingActionButton({
           {
             opacity: pressed ? 0.8 : 1,
             transform: [{ scale: pressed ? 0.95 : 1 }],
+            transitionProperty: Platform.OS === "web" ? "opacity, transform" : "none",
+            transitionDuration: "150ms",
           },
         ]}
       >
@@ -43,6 +45,8 @@ export function FloatingActionButton({
             shadowOffset: { width: 0, height: 4 },
             shadowOpacity: 0.3,
             shadowRadius: 8,
+            transitionProperty: Platform.OS === "web" ? "background-color, box-shadow" : "none",
+            transitionDuration: "300ms",
           }}
         >
           <MaterialIcons
