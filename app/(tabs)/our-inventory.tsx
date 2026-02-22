@@ -5,6 +5,7 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
 import { ScreenContainer } from "@/components/screen-container";
 import { AppHeader } from "@/components/app-header";
+import { FloatingActionButton } from "@/components/floating-action-button";
 import { useColors } from "@/hooks/use-colors";
 
 interface Car {
@@ -66,6 +67,11 @@ export default function OurInventoryScreen() {
 
   const handleMenuPress = () => {
     router.push("/settings");
+  };
+
+  const handleFABPress = () => {
+    // TODO: فتح شاشة إضافة سيارة جديدة
+    console.log("إضافة سيارة جديدة");
   };
 
   const filteredCars = selectedLocation === "all" 
@@ -263,6 +269,7 @@ export default function OurInventoryScreen() {
             )}
           </View>
         </ScrollView>
+        <FloatingActionButton onPress={handleFABPress} />
       </ScreenContainer>
     </View>
   );

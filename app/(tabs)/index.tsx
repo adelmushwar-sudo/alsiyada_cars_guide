@@ -4,6 +4,7 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
 import { ScreenContainer } from "@/components/screen-container";
 import { AppHeader } from "@/components/app-header";
+import { FloatingActionButton } from "@/components/floating-action-button";
 import { useColors } from "@/hooks/use-colors";
 
 interface StatCard {
@@ -19,6 +20,11 @@ export default function HomeScreen() {
 
   const handleMenuPress = () => {
     router.push("/settings");
+  };
+
+  const handleFABPress = () => {
+    // TODO: فتح شاشة إضافة سيارة جديدة
+    console.log("إضافة سيارة جديدة");
   };
 
   const stats: StatCard[] = [
@@ -202,6 +208,7 @@ export default function HomeScreen() {
             </View>
           </View>
         </ScrollView>
+        <FloatingActionButton onPress={handleFABPress} />
       </ScreenContainer>
     </View>
   );

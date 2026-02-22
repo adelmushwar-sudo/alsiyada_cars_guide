@@ -5,6 +5,7 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
 import { ScreenContainer } from "@/components/screen-container";
 import { AppHeader } from "@/components/app-header";
+import { FloatingActionButton } from "@/components/floating-action-button";
 import { useColors } from "@/hooks/use-colors";
 
 interface CustomerRequest {
@@ -72,6 +73,11 @@ export default function RequestsScreen() {
 
   const handleMenuPress = () => {
     router.push("/settings");
+  };
+
+  const handleFABPress = () => {
+    // TODO: فتح شاشة إضافة طلب جديد
+    console.log("إضافة طلب جديد");
   };
 
   const filteredRequests = selectedStatus === "all"
@@ -282,6 +288,7 @@ export default function RequestsScreen() {
             )}
           </View>
         </ScrollView>
+        <FloatingActionButton onPress={handleFABPress} />
       </ScreenContainer>
     </View>
   );

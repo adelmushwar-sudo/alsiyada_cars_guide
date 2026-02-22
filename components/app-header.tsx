@@ -31,9 +31,9 @@ export function AppHeader({
         paddingTop: insets.top,
       }}
     >
-      <View className="flex-row items-center justify-between px-4 py-3 h-16">
+      <View className="flex-row items-center justify-between px-3 py-2 h-12">
         {/* الجانب الأيمن - القائمة والعنوان */}
-        <View className="flex-row items-center flex-1 gap-3">
+        <View className="flex-row items-center flex-1 gap-2">
           {showMenu && (
             <Pressable
               onPress={onMenuPress}
@@ -43,14 +43,15 @@ export function AppHeader({
             >
               <MaterialIcons
                 name="menu"
-                size={28}
+                size={24}
                 color={colors.primary}
               />
             </Pressable>
           )}
           <Text
-            className="text-xl font-bold text-primary"
+            className="text-lg font-bold text-primary"
             style={{ fontFamily: "Cairo" }}
+            numberOfLines={1}
           >
             {title}
           </Text>
@@ -58,7 +59,7 @@ export function AppHeader({
 
         {/* الجانب الأيسر - الأيقونات */}
         {showMenu && (
-          <View className="flex-row items-center gap-2">
+          <View className="flex-row items-center gap-1">
             <Pressable
               onPress={onFavoritesPress}
               style={({ pressed }) => [
@@ -67,7 +68,7 @@ export function AppHeader({
             >
               <MaterialIcons
                 name="favorite-border"
-                size={24}
+                size={20}
                 color={colors.primary}
               />
             </Pressable>
@@ -80,7 +81,7 @@ export function AppHeader({
             >
               <MaterialIcons
                 name="notifications-none"
-                size={24}
+                size={20}
                 color={colors.primary}
               />
             </Pressable>
@@ -93,7 +94,7 @@ export function AppHeader({
             >
               <MaterialIcons
                 name="search"
-                size={24}
+                size={20}
                 color={colors.primary}
               />
             </Pressable>

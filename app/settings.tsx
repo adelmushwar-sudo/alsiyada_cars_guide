@@ -1,7 +1,8 @@
 import { ScrollView, Text, View, Pressable, Image } from "react-native";
 import { useRouter } from "expo-router";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
@@ -14,6 +15,25 @@ export default function SettingsScreen() {
   const router = useRouter();
   const colorScheme = useColorScheme();
   const [themeMode, setThemeMode] = useState<ThemeMode>("system");
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  // تحميل المظهر المحفوظ عند فتح الصفحة
+  useEffect(() => {
+    const loadTheme = async () => {
+      try {
+        const savedTheme = await AsyncStorage.getItem("themeMode");
+        if (savedTheme && (savedTheme === "light" || savedTheme === "dark" || savedTheme === "system")) {
+          setThemeMode(savedTheme as ThemeMode);
+        }
+      } catch (error) {
+        console.error("Failed to load theme:", error);
+      } finally {
+        setIsLoaded(true);
+      }
+    };
+
+    loadTheme();
+  }, []);
 
   const handleLogout = () => {
     // TODO: تنفيذ تسجيل الخروج
@@ -21,9 +41,32 @@ export default function SettingsScreen() {
     router.back();
   };
 
+  const handleThemeChange = async (mode: ThemeMode) => {
+    try {
+      await AsyncStorage.setItem("themeMode", mode);
+      setThemeMode(mode);
+
+      // تطبيق المظهر على النظام
+      if (mode === "dark") {
+        document.documentElement.setAttribute("data-theme", "dark");
+      } else if (mode === "light") {
+        document.documentElement.removeAttribute("data-theme");
+      } else {
+        // system mode
+        if (colorScheme === "dark") {
+          document.documentElement.setAttribute("data-theme", "dark");
+        } else {
+          document.documentElement.removeAttribute("data-theme");
+        }
+      }
+    } catch (error) {
+      console.error("Failed to save theme:", error);
+    }
+  };
+
   const renderThemeOption = (mode: ThemeMode, label: string) => (
     <Pressable
-      onPress={() => setThemeMode(mode)}
+      onPress={() => handleThemeChange(mode)}
       style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }]}
     >
       <View
