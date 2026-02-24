@@ -1,35 +1,28 @@
 import { View, Pressable, Text, Platform } from "react-native";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useColors } from "@/hooks/use-colors";
-import { useColorScheme } from "@/hooks/use-color-scheme";
 import { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
-interface ThemeSelectorProps {
-  onThemeChange?: (theme: "light" | "dark" | "system") => void;
-}
+import { useThemeContext } from "@/lib/theme-provider";
 
 type ThemeMode = "light" | "dark" | "system";
 
+interface ThemeSelectorProps {
+  onThemeChange?: (theme: ThemeMode) => void;
+}
+
 export function ThemeSelector({ onThemeChange }: ThemeSelectorProps) {
   const colors = useColors();
-  const systemScheme = useColorScheme();
-  const [selectedTheme, setSelectedTheme] = useState<ThemeMode>("system");
+  const { themeMode, setThemeMode } = useThemeContext();
+  const [selectedTheme, setSelectedTheme] = useState<ThemeMode>(themeMode);
 
   useEffect(() => {
-    // تحميل الثيم المحفوظ
-    const loadTheme = async () => {
-      const saved = await AsyncStorage.getItem("theme-preference");
-      if (saved) {
-        setSelectedTheme(saved as ThemeMode);
-      }
-    };
-    loadTheme();
-  }, []);
+    setSelectedTheme(themeMode);
+  }, [themeMode]);
 
   const handleThemeSelect = async (theme: ThemeMode) => {
     setSelectedTheme(theme);
-    await AsyncStorage.setItem("theme-preference", theme);
+    await setThemeMode(theme);
     onThemeChange?.(theme);
   };
 
@@ -41,7 +34,12 @@ export function ThemeSelector({ onThemeChange }: ThemeSelectorProps) {
   }> = [
     { id: "light", label: "فاتح", icon: "light-mode", description: "وضع نهاري" },
     { id: "dark", label: "داكن", icon: "dark-mode", description: "وضع ليلي" },
-    { id: "system", label: "النظام", icon: "brightness-auto", description: "اتباع النظام" },
+    {
+      id: "system",
+      label: "النظام",
+      icon: "brightness-auto",
+      description: "اتباع إعدادات النظام",
+    },
   ];
 
   return (
@@ -129,7 +127,11 @@ export function ThemeSelector({ onThemeChange }: ThemeSelectorProps) {
                     className="w-6 h-6 rounded-full items-center justify-center"
                     style={{ backgroundColor: "#FFFFFF" }}
                   >
-                    <MaterialIcons name="check" size={16} color={colors.primary} />
+                    <MaterialIcons
+                      name="check"
+                      size={16}
+                      color={colors.primary}
+                    />
                   </View>
                 )}
               </View>
@@ -137,6 +139,27 @@ export function ThemeSelector({ onThemeChange }: ThemeSelectorProps) {
           );
         })}
       </View>
+
+      {/* معلومات إضافية عن وضع النظام */}
+      {selectedTheme === "system" && (
+        <View
+          className="bg-primary opacity-10 rounded-lg p-3 mt-2 border border-primary"
+          style={{
+            transitionProperty:
+              Platform.OS === "web"
+                ? "background-color, border-color"
+                : "none",
+            transitionDuration: "300ms",
+          }}
+        >
+          <Text
+            className="text-xs text-foreground"
+            style={{ fontFamily: "Cairo" }}
+          >
+            ℹ️ التطبيق سيتابع تلقائياً تغييرات إعدادات النظام في الوقت الفعلي
+          </Text>
+        </View>
+      )}
     </View>
   );
 }

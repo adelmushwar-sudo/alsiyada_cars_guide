@@ -55,22 +55,8 @@ export default function SettingsScreen() {
   };
 
   const handleThemeChange = async (mode: ThemeMode) => {
-    try {
-      await AsyncStorage.setItem("themeMode", mode);
-      setThemeMode(mode);
-
-      // تطبيق المظهر فوراً
-      if (mode === "dark") {
-        setColorScheme("dark");
-      } else if (mode === "light") {
-        setColorScheme("light");
-      } else {
-        // system mode
-        setColorScheme(colorScheme ?? "light");
-      }
-    } catch (error) {
-      console.error("Failed to save theme:", error);
-    }
+    // لا حاجة لتطبيق يدوي - Theme Provider سيتولى ذلك
+    console.log("Theme changed to:", mode);
   };
 
   const SettingCard = ({
