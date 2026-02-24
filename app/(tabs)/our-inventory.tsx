@@ -74,6 +74,10 @@ export default function OurInventoryScreen() {
     console.log("إضافة سيارة جديدة");
   };
 
+  const handleCarPress = (carId: string) => {
+    router.push(`/car-details?id=${carId}`);
+  };
+
   const filteredCars = selectedLocation === "all" 
     ? SAMPLE_CARS 
     : SAMPLE_CARS.filter(car => car.location === selectedLocation);
@@ -185,6 +189,7 @@ export default function OurInventoryScreen() {
               filteredCars.map((car) => (
                 <Pressable
                   key={car.id}
+                  onPress={() => handleCarPress(car.id)}
                   style={({ pressed }) => [
                     {
                       marginBottom: 12,
