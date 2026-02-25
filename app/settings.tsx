@@ -223,38 +223,6 @@ export default function SettingsScreen() {
             <ThemeSelector onThemeChange={handleThemeChange} />
           </SettingCard>
 
-          {/* Management Hub */}
-          <Pressable
-            onPress={handleManagementHub}
-            style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }]}
-          >
-            <View
-              className="rounded-lg p-4 mb-4 flex-row items-center justify-between"
-              style={{
-                backgroundColor: "#E8A000",
-                transitionProperty:
-                  Platform.OS === "web" ? "background-color" : "none",
-                transitionDuration: "300ms",
-              }}
-            >
-              <View className="flex-1">
-                <Text
-                  className="text-base font-bold text-white"
-                  style={{ fontFamily: "Cairo" }}
-                >
-                  إدارة البيانات
-                </Text>
-                <Text
-                  className="text-xs text-white opacity-80 mt-1"
-                  style={{ fontFamily: "Cairo" }}
-                >
-                  إدارة البيانات الأساسية والمواصفات
-                </Text>
-              </View>
-              <MaterialIcons name="arrow-forward" size={24} color="#FFFFFF" />
-            </View>
-          </Pressable>
-
           {/* Control Center */}
           <Pressable
             onPress={() => router.push("/control-center")}
