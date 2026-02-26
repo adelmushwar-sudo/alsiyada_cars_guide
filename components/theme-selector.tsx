@@ -43,7 +43,7 @@ export function ThemeSelector({ onThemeChange }: ThemeSelectorProps) {
   ];
 
   return (
-    <View className="gap-3">
+    <View style={{ gap: 16 }}>
       <Text
         className="text-sm font-bold text-muted px-1"
         style={{ fontFamily: "Cairo" }}
@@ -51,7 +51,7 @@ export function ThemeSelector({ onThemeChange }: ThemeSelectorProps) {
         اختر المظهر المفضل
       </Text>
 
-      <View className="gap-2">
+      <View style={{ gap: 12 }}>
         {themes.map((theme) => {
           const isSelected = selectedTheme === theme.id;
           const bgColor = isSelected ? colors.primary : colors.surface;
@@ -72,8 +72,12 @@ export function ThemeSelector({ onThemeChange }: ThemeSelectorProps) {
               ]}
             >
               <View
-                className="flex-row items-center gap-3 px-4 py-3 rounded-lg border-2"
+                className="flex-row items-center border-2"
                 style={{
+                  paddingHorizontal: 18,
+                  paddingVertical: 14,
+                  borderRadius: 12,
+                  gap: 16,
                   backgroundColor: bgColor + (isSelected ? "" : "00"),
                   borderColor,
                   transitionProperty:
@@ -84,8 +88,9 @@ export function ThemeSelector({ onThemeChange }: ThemeSelectorProps) {
                 }}
               >
                 <View
-                  className="w-10 h-10 rounded-lg items-center justify-center"
+                  className="w-10 h-10 items-center justify-center"
                   style={{
+                    borderRadius: 10,
                     backgroundColor: isSelected
                       ? "#FFFFFF" + "20"
                       : colors.primary + "20",
@@ -101,6 +106,69 @@ export function ThemeSelector({ onThemeChange }: ThemeSelectorProps) {
                 <View className="flex-1">
                   <Text
                     className="font-semibold"
+                    style={{
+                      color: textColor,
+                      fontFamily: "Cairo",
+                      fontSize: 14,
+                    }}
+                  >
+                    {theme.label}
+                  </Text>
+                  <Text
+                    className="text-xs"
+                    style={{
+                      color: isSelected
+                        ? "#FFFFFF" + "80"
+                        : colors.muted,
+                      fontFamily: "Cairo",
+                    }}
+                  >
+                    {theme.description}
+                  </Text>
+                </View>
+
+                {isSelected && (
+                  <View
+                    className="w-6 h-6 rounded-full items-center justify-center"
+                    style={{ backgroundColor: "#FFFFFF" }}
+                  >
+                    <MaterialIcons
+                      name="check"
+                      size={16}
+                      color={colors.primary}
+                    />
+                  </View>
+                )}
+              </View>
+            </Pressable>
+          );
+        })}
+      </View>
+
+      {/* معلومات إضافية عن وضع النظام */}
+      {selectedTheme === "system" && (
+        <View
+          className="bg-primary opacity-10 p-3 mt-2 border border-primary"
+          style={{
+            borderRadius: 12,
+            transitionProperty:
+              Platform.OS === "web"
+                ? "background-color, border-color"
+                : "none",
+            transitionDuration: "300ms",
+          }}
+        >
+          <Text
+            className="text-xs text-foreground"
+            style={{ fontFamily: "Cairo" }}
+          >
+            ℹ️ التطبيق سيتابع تلقائياً تغييرات إعدادات النظام في الوقت الفعلي
+          </Text>
+        </View>
+      )}
+    </View>
+  );
+}                    className="font-semibold"
                     style={{
                       color: textColor,
                       fontFamily: "Cairo",
