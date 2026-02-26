@@ -11,7 +11,6 @@ import {
 } from "react-native";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useColors } from "@/hooks/use-colors";
-import { BlurView } from "expo-blur";
 
 export interface BottomSheetItem {
   id: string;
@@ -106,23 +105,14 @@ export function SmartBottomSheet({
       animationType="slide"
       onRequestClose={onClose}
     >
-      {/* Blur Background */}
-      {Platform.OS !== "web" ? (
-        <BlurView intensity={90} style={{ flex: 1 }}>
-          <Pressable
-            style={{ flex: 1 }}
-            onPress={onClose}
-          />
-        </BlurView>
-      ) : (
-        <Pressable
-          style={{
-            flex: 1,
-            backgroundColor: "rgba(0,0,0,0.5)",
-          }}
-          onPress={onClose}
-        />
-      )}
+      {/* Overlay Background */}
+      <Pressable
+        style={{
+          flex: 1,
+          backgroundColor: "rgba(0,0,0,0.5)",
+        }}
+        onPress={onClose}
+      />
 
       {/* Bottom Sheet Container */}
       <View

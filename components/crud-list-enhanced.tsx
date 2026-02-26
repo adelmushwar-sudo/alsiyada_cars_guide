@@ -6,12 +6,11 @@ import {
   FlatList,
   Alert,
   Platform,
-  ScrollView,
 } from "react-native";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import * as Haptics from "expo-haptics";
 import { useColors } from "@/hooks/use-colors";
 import { SmartBottomSheet } from "./smart-bottom-sheet";
-import { SmartDropdown } from "./smart-dropdown";
 
 export interface CRUDItem {
   id: string;
@@ -55,6 +54,7 @@ export function CRUDListEnhanced({
   const [editingId, setEditingId] = useState<string | null>(null);
   const [sortableMode, setSortableMode] = useState(false);
   const [draggedItem, setDraggedItem] = useState<string | null>(null);
+  const [longPressedItem, setLongPressedItem] = useState<string | null>(null);
 
   const editingItem = editingId
     ? items.find((item) => item.id === editingId)
@@ -95,13 +95,67 @@ export function CRUDListEnhanced({
     ]);
   };
 
-  const handleLongPress = () => {
-    setSortableMode(!sortableMode);
+  const handleLongPress = (itemId: string) => {
+    setLongPressedItem(itemId);
+    setSortableMode(true);
+    setDraggedItem(itemId);
+    
+    // Haptic feedback on long press
+    if (Platform.OS !== "web") {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    }
+  };
+
+  const handleDragStart = (itemId: string) => {
+    setDraggedItem(itemId);
+    
+    // Haptic feedback when starting drag
+    if (Platform.OS !== "web") {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+  };
+
+  const handleDragEnd = () => {
+    setDraggedItem(null);
+  };
+
+  const handleMoveUp = (index: number) => {
+    if (index > 0) {
+      const newItems = [...items];
+      [newItems[index], newItems[index - 1]] = [newItems[index - 1], newItems[index]];
+      onReorder(
+        newItems.map((item, i) => ({
+          ...item,
+          order: i + 1,
+        }))
+      );
+      
+      if (Platform.OS !== "web") {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      }
+    }
+  };
+
+  const handleMoveDown = (index: number) => {
+    if (index < items.length - 1) {
+      const newItems = [...items];
+      [newItems[index], newItems[index + 1]] = [newItems[index + 1], newItems[index]];
+      onReorder(
+        newItems.map((item, i) => ({
+          ...item,
+          order: i + 1,
+        }))
+      );
+      
+      if (Platform.OS !== "web") {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      }
+    }
   };
 
   const renderItem = ({ item, index }: { item: CRUDItem; index: number }) => (
     <Pressable
-      onLongPress={handleLongPress}
+      onLongPress={() => handleLongPress(item.id)}
       style={({ pressed }) => [{ opacity: pressed ? 0.7 : 1 }]}
     >
       <View
@@ -110,22 +164,66 @@ export function CRUDListEnhanced({
           borderColor: colors.border,
           backgroundColor:
             draggedItem === item.id
-              ? colors.primary + "15"
+              ? colors.primary + "20"
               : colors.background,
         }}
       >
-        {/* Drag Handle */}
+        {/* Drag Handle - Only visible in sortable mode */}
         {sortableMode && (
-          <Pressable
-            onPressIn={() => setDraggedItem(item.id)}
-            onPressOut={() => setDraggedItem(null)}
-          >
-            <MaterialIcons
-              name="drag-handle"
-              size={20}
-              color={draggedItem === item.id ? colors.primary : colors.muted}
-            />
-          </Pressable>
+          <View className="flex-row items-center gap-1">
+            <Pressable
+              onPressIn={() => handleDragStart(item.id)}
+              onPressOut={handleDragEnd}
+              style={({ pressed }) => [
+                {
+                  opacity: pressed ? 0.8 : 1,
+                  padding: 4,
+                },
+              ]}
+            >
+              <MaterialIcons
+                name="drag-handle"
+                size={20}
+                color={draggedItem === item.id ? colors.primary : colors.muted}
+              />
+            </Pressable>
+            
+            {/* Move Up Button */}
+            <Pressable
+              onPress={() => handleMoveUp(index)}
+              disabled={index === 0}
+              style={({ pressed }) => [
+                {
+                  opacity: index === 0 ? 0.3 : pressed ? 0.7 : 1,
+                  padding: 4,
+                },
+              ]}
+            >
+              <MaterialIcons
+                name="arrow-upward"
+                size={16}
+                color={index === 0 ? colors.muted : colors.primary}
+              />
+            </Pressable>
+            
+            {/* Move Down Button */}
+            <Pressable
+              onPress={() => handleMoveDown(index)}
+              disabled={index === items.length - 1}
+              style={({ pressed }) => [
+                {
+                  opacity: index === items.length - 1 ? 0.3 : pressed ? 0.7 : 1,
+                  padding: 4,
+                },
+              ]}
+            >
+              <MaterialIcons
+                name="arrow-downward"
+                size={16}
+                color={index === items.length - 1 ? colors.muted : colors.primary}
+              />
+            </Pressable>
+          </View>
         )}
 
         {/* Color Preview */}
@@ -155,20 +253,22 @@ export function CRUDListEnhanced({
         </View>
 
         {/* Actions */}
-        <View className="flex-row gap-2">
-          <Pressable
-            onPress={() => handleEditPress(item)}
-            style={({ pressed }) => [{ opacity: pressed ? 0.6 : 1 }]}
-          >
-            <MaterialIcons name="edit" size={18} color={colors.primary} />
-          </Pressable>
-          <Pressable
-            onPress={() => handleDelete(item.id)}
-            style={({ pressed }) => [{ opacity: pressed ? 0.6 : 1 }]}
-          >
-            <MaterialIcons name="delete" size={18} color={colors.error} />
-          </Pressable>
-        </View>
+        {!sortableMode && (
+          <View className="flex-row gap-2">
+            <Pressable
+              onPress={() => handleEditPress(item)}
+              style={({ pressed }) => [{ opacity: pressed ? 0.6 : 1 }]}
+            >
+              <MaterialIcons name="edit" size={18} color={colors.primary} />
+            </Pressable>
+            <Pressable
+              onPress={() => handleDelete(item.id)}
+              style={({ pressed }) => [{ opacity: pressed ? 0.6 : 1 }]}
+            >
+              <MaterialIcons name="delete" size={18} color={colors.error} />
+            </Pressable>
+          </View>
+        )}
       </View>
     </Pressable>
   );
@@ -194,21 +294,42 @@ export function CRUDListEnhanced({
               style={{ fontFamily: "Cairo" }}
             >
               {items.length} عنصر
+              {sortableMode && " - اضغط طويلاً للسحب"}
             </Text>
           </View>
         </View>
 
-        <Pressable
-          onPress={handleAddPress}
-          style={({ pressed }) => [{ opacity: pressed ? 0.6 : 1 }]}
-        >
-          <View
-            className="w-10 h-10 rounded-lg items-center justify-center"
-            style={{ backgroundColor: colors.primary }}
+        <View className="flex-row gap-2">
+          {sortableMode && (
+            <Pressable
+              onPress={() => {
+                setSortableMode(false);
+                setDraggedItem(null);
+                setLongPressedItem(null);
+              }}
+              style={({ pressed }) => [{ opacity: pressed ? 0.6 : 1 }]}
+            >
+              <View
+                className="w-10 h-10 rounded-lg items-center justify-center"
+                style={{ backgroundColor: colors.surface }}
+              >
+                <MaterialIcons name="close" size={20} color={colors.foreground} />
+              </View>
+            </Pressable>
+          )}
+
+          <Pressable
+            onPress={handleAddPress}
+            style={({ pressed }) => [{ opacity: pressed ? 0.6 : 1 }]}
           >
-            <MaterialIcons name="add" size={20} color="#FFFFFF" />
-          </View>
-        </Pressable>
+            <View
+              className="w-10 h-10 rounded-lg items-center justify-center"
+              style={{ backgroundColor: colors.primary }}
+            >
+              <MaterialIcons name="add" size={20} color="#FFFFFF" />
+            </View>
+          </Pressable>
+        </View>
       </View>
 
       {/* List */}
