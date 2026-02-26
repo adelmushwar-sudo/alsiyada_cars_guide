@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
-import { View, Text, ScrollView } from "react-native";
+import { useState } from "react";
+import { View, Text, ScrollView, Pressable } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { ScreenContainer } from "@/components/screen-container";
-import { CRUDList, type CRUDItem } from "@/components/crud-list";
+import { CRUDListEnhanced, type CRUDItem } from "@/components/crud-list-enhanced";
 import { useColors } from "@/hooks/use-colors";
 
 const SECTION_CONFIG = {
@@ -11,31 +11,43 @@ const SECTION_CONFIG = {
     title: "ماركات السيارات",
     icon: "directions-car",
     showColorPicker: false,
+    requiresParent: false,
+    parentLabel: "",
   },
   models: {
     title: "موديلات السيارات",
     icon: "model-training",
     showColorPicker: false,
+    requiresParent: true,
+    parentLabel: "اختر الماركة",
   },
   trims: {
     title: "فئات السيارات",
     icon: "category",
     showColorPicker: false,
+    requiresParent: true,
+    parentLabel: "اختر الموديل",
   },
   "exterior-colors": {
     title: "الألوان الخارجية",
     icon: "palette",
     showColorPicker: true,
+    requiresParent: true,
+    parentLabel: "اختر الموديل",
   },
   "interior-colors": {
     title: "الألوان الداخلية",
     icon: "home-fill",
     showColorPicker: true,
+    requiresParent: true,
+    parentLabel: "اختر الموديل",
   },
   "regional-specs": {
     title: "المواصفات الإقليمية",
     icon: "public",
     showColorPicker: false,
+    requiresParent: true,
+    parentLabel: "اختر الموديل",
   },
 };
 
@@ -44,30 +56,135 @@ export default function ManagementSection() {
   const colors = useColors();
   const { sectionId } = useLocalSearchParams<{ sectionId: string }>();
 
-  const [items, setItems] = useState<CRUDItem[]>([
+  // Mock data - في التطبيق الحقيقي ستأتي من قاعدة البيانات
+  const [brands, setBrands] = useState<CRUDItem[]>([
     {
       id: "1",
       name: "تويوتا",
       order: 1,
-      hexCode: undefined,
     },
     {
       id: "2",
       name: "مرسيدس",
       order: 2,
-      hexCode: undefined,
+    },
+    {
+      id: "3",
+      name: "بي إم دبليو",
+      order: 3,
+    },
+  ]);
+
+  const [models, setModels] = useState<CRUDItem[]>([
+    {
+      id: "m1",
+      name: "لاند كروزر",
+      order: 1,
+      parentId: "1",
+    },
+    {
+      id: "m2",
+      name: "كامري",
+      order: 2,
+      parentId: "1",
+    },
+  ]);
+
+  const [trims, setTrims] = useState<CRUDItem[]>([
+    {
+      id: "t1",
+      name: "GXR",
+      order: 1,
+      parentId: "m1",
+    },
+    {
+      id: "t2",
+      name: "VXR",
+      order: 2,
+      parentId: "m1",
+    },
+  ]);
+
+  const [exteriorColors, setExteriorColors] = useState<CRUDItem[]>([
+    {
+      id: "ec1",
+      name: "أبيض لؤلؤي",
+      order: 1,
+      hexCode: "#FFFFFF",
+      parentId: "m1",
+    },
+    {
+      id: "ec2",
+      name: "أسود معدني",
+      order: 2,
+      hexCode: "#000000",
+      parentId: "m1",
+    },
+  ]);
+
+  const [interiorColors, setInteriorColors] = useState<CRUDItem[]>([
+    {
+      id: "ic1",
+      name: "بني فاتح",
+      order: 1,
+      hexCode: "#8B4513",
+      parentId: "m1",
+    },
+  ]);
+
+  const [regionalSpecs, setRegionalSpecs] = useState<CRUDItem[]>([
+    {
+      id: "rs1",
+      name: "خليجي",
+      order: 1,
+      parentId: "m1",
     },
   ]);
 
   const config =
     SECTION_CONFIG[sectionId as keyof typeof SECTION_CONFIG] || {};
 
-  const handleAdd = (name: string, hexCode?: string) => {
+  // Get the appropriate data and setter based on section
+  const getDataAndSetter = () => {
+    switch (sectionId) {
+      case "brands":
+        return { items: brands, setItems: setBrands, parentItems: [] };
+      case "models":
+        return { items: models, setItems: setModels, parentItems: brands };
+      case "trims":
+        return { items: trims, setItems: setTrims, parentItems: models };
+      case "exterior-colors":
+        return {
+          items: exteriorColors,
+          setItems: setExteriorColors,
+          parentItems: models,
+        };
+      case "interior-colors":
+        return {
+          items: interiorColors,
+          setItems: setInteriorColors,
+          parentItems: models,
+        };
+      case "regional-specs":
+        return {
+          items: regionalSpecs,
+          setItems: setRegionalSpecs,
+          parentItems: models,
+        };
+      default:
+        return { items: [], setItems: () => {}, parentItems: [] };
+    }
+  };
+
+  const { items, setItems, parentItems } = getDataAndSetter();
+
+  const handleAdd = (name: string, hexCode?: string, parentId?: string) => {
     const newItem: CRUDItem = {
       id: Date.now().toString(),
       name,
       order: items.length + 1,
       hexCode,
+      parentId,
     };
     setItems([...items, newItem]);
   };
@@ -118,7 +235,7 @@ export default function ManagementSection() {
       </View>
 
       {/* Content */}
-      <CRUDList
+      <CRUDListEnhanced
         title={config.title || ""}
         icon={config.icon || "list"}
         items={items}
@@ -127,9 +244,10 @@ export default function ManagementSection() {
         onDelete={handleDelete}
         onReorder={handleReorder}
         showColorPicker={config.showColorPicker || false}
+        requiresParent={config.requiresParent || false}
+        parentItems={parentItems}
+        parentLabel={config.parentLabel}
       />
     </ScreenContainer>
   );
 }
-
-import { Pressable } from "react-native";
