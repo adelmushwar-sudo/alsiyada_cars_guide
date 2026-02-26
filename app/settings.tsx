@@ -73,8 +73,9 @@ export default function SettingsScreen() {
     children: React.ReactNode;
   }) => (
     <View
-      className="bg-surface rounded-lg border border-border overflow-hidden mb-4"
+      className="bg-surface border border-border overflow-hidden mb-5"
       style={{
+        borderRadius: 12,
         transitionProperty:
           Platform.OS === "web"
             ? "background-color, border-color"
@@ -82,10 +83,20 @@ export default function SettingsScreen() {
         transitionDuration: "300ms",
       }}
     >
-      <View className="flex-row items-center gap-3 px-4 py-3 border-b border-border">
+      <View 
+        className="flex-row items-center border-b border-border"
+        style={{ 
+          paddingHorizontal: 18, 
+          paddingVertical: 14,
+          gap: 16, // زيادة التباعد بين الأيقونة والنص
+        }}
+      >
         <View
-          className="w-10 h-10 rounded-lg items-center justify-center"
-          style={{ backgroundColor: colors.primary + "20" }}
+          className="w-10 h-10 items-center justify-center"
+          style={{ 
+            backgroundColor: colors.primary + "20",
+            borderRadius: 10,
+          }}
         >
           <MaterialIcons
             name={icon as any}
@@ -100,7 +111,7 @@ export default function SettingsScreen() {
           {title}
         </Text>
       </View>
-      <View className="px-4 py-3">{children}</View>
+      <View style={{ padding: 18 }}>{children}</View>
     </View>
   );
 
@@ -146,13 +157,16 @@ export default function SettingsScreen() {
           className="flex-1"
           contentContainerStyle={{
             flexGrow: 1,
-            paddingHorizontal: 12,
-            paddingVertical: 12,
+            paddingHorizontal: 16,
+            paddingVertical: 20,
           }}
         >
           {/* User Profile Card */}
           <SettingCard title="بيانات الحساب" icon="person">
-            <View className="flex-row items-center gap-3">
+            <View 
+              className="flex-row items-center"
+              style={{ gap: 16 }}
+            >
               <View
                 className="w-16 h-16 rounded-full items-center justify-center"
                 style={{ backgroundColor: colors.primary + "20" }}
@@ -185,7 +199,10 @@ export default function SettingsScreen() {
             <Pressable
               style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }]}
             >
-              <View className="flex-row items-center justify-between py-2 border-b border-border pb-2">
+              <View 
+                className="flex-row items-center justify-between border-b border-border"
+                style={{ paddingVertical: 12 }}
+              >
                 <Text
                   className="text-sm text-foreground"
                   style={{ fontFamily: "Cairo" }}
@@ -202,7 +219,10 @@ export default function SettingsScreen() {
             <Pressable
               style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }]}
             >
-              <View className="flex-row items-center justify-between py-2">
+              <View 
+                className="flex-row items-center justify-between"
+                style={{ paddingVertical: 12 }}
+              >
                 <Text
                   className="text-sm text-foreground"
                   style={{ fontFamily: "Cairo" }}
@@ -229,8 +249,9 @@ export default function SettingsScreen() {
             style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }]}
           >
             <View
-              className="bg-primary rounded-lg p-4 mb-4 flex-row items-center justify-between"
+              className="bg-primary p-4 mb-5 flex-row items-center justify-between"
               style={{
+                borderRadius: 12,
                 transitionProperty:
                   Platform.OS === "web" ? "background-color" : "none",
                 transitionDuration: "300ms",
@@ -271,8 +292,9 @@ export default function SettingsScreen() {
               ]}
             >
               <View
-                className="border border-primary rounded-lg p-3 items-center"
+                className="border border-primary p-3 items-center"
                 style={{
+                  borderRadius: 12,
                   transitionProperty:
                     Platform.OS === "web"
                       ? "background-color, border-color"
@@ -311,7 +333,10 @@ export default function SettingsScreen() {
           onPress={handleLogout}
           style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }]}
         >
-          <View className="bg-error rounded-lg p-3 items-center flex-row gap-2 justify-center">
+          <View 
+            className="bg-error p-3 items-center flex-row justify-center"
+            style={{ borderRadius: 12, gap: 10 }}
+          >
             <MaterialIcons name="logout" size={20} color="#FFFFFF" />
             <Text
               className="text-sm font-bold text-white"
