@@ -171,8 +171,9 @@ export default function ControlCenterScreen() {
   const insets = useSafeAreaInsets();
 
   const handleOptionPress = (option: ControlOption) => {
-    console.log(`Navigating to ${option.id}`);
-    // سيتم إضافة الملاحة لاحقاً
+    if (option.route) {
+      router.push(option.route as any);
+    }
   };
 
   return (

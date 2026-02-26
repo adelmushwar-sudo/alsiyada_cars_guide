@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   View,
   Text,
@@ -8,6 +8,7 @@ import {
   FlatList,
   Alert,
   Platform,
+  ScrollView,
 } from "react-native";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useColors } from "@/hooks/use-colors";
@@ -18,18 +19,21 @@ export interface CRUDItem {
   name: string;
   order: number;
   hexCode?: string;
+  parentId?: string;
 }
 
 interface CRUDListProps {
   title: string;
   icon: string;
   items: CRUDItem[];
-  onAdd: (name: string, hexCode?: string) => void;
+  onAdd: (name: string, hexCode?: string, parentId?: string) => void;
   onUpdate: (id: string, name: string, hexCode?: string) => void;
   onDelete: (id: string) => void;
   onReorder: (items: CRUDItem[]) => void;
   showColorPicker?: boolean;
   parentName?: string;
+  requiresParent?: boolean;
+  parentItems?: CRUDItem[];
 }
 
 export function CRUDList({
@@ -42,13 +46,17 @@ export function CRUDList({
   onReorder,
   showColorPicker = false,
   parentName,
+  requiresParent = false,
+  parentItems = [],
 }: CRUDListProps) {
   const colors = useColors();
   const [modalVisible, setModalVisible] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [inputValue, setInputValue] = useState("");
   const [colorValue, setColorValue] = useState("#000000");
+  const [selectedParentId, setSelectedParentId] = useState<string>("");
   const [draggedItem, setDraggedItem] = useState<string | null>(null);
+  const [sortableMode, setSortableMode] = useState(false);
 
   const handleAdd = () => {
     if (!inputValue.trim()) {
@@ -56,15 +64,25 @@ export function CRUDList({
       return;
     }
 
+    if (requiresParent && !selectedParentId) {
+      Alert.alert("خطأ", "يرجى اختيار العنصر الأب");
+      return;
+    }
+
     if (editingId) {
       onUpdate(editingId, inputValue, showColorPicker ? colorValue : undefined);
       setEditingId(null);
     } else {
-      onAdd(inputValue, showColorPicker ? colorValue : undefined);
+      onAdd(
+        inputValue,
+        showColorPicker ? colorValue : undefined,
+        selectedParentId || undefined
+      );
     }
 
     setInputValue("");
     setColorValue("#000000");
+    setSelectedParentId("");
     setModalVisible(false);
   };
 
@@ -72,6 +90,7 @@ export function CRUDList({
     setEditingId(item.id);
     setInputValue(item.name);
     setColorValue(item.hexCode || "#000000");
+    setSelectedParentId(item.parentId || "");
     setModalVisible(true);
   };
 
@@ -86,26 +105,45 @@ export function CRUDList({
     ]);
   };
 
+  const handleLongPress = () => {
+    setSortableMode(true);
+  };
+
+  const handleReorder = (fromIndex: number, toIndex: number) => {
+    const newItems = [...items];
+    const [movedItem] = newItems.splice(fromIndex, 1);
+    newItems.splice(toIndex, 0, movedItem);
+    onReorder(newItems);
+  };
+
   const renderItem = ({ item, index }: { item: CRUDItem; index: number }) => (
     <Pressable
-      onPress={() => handleEdit(item)}
+      onLongPress={handleLongPress}
       style={({ pressed }) => [{ opacity: pressed ? 0.7 : 1 }]}
     >
       <View
         className="flex-row items-center gap-3 px-4 py-3 border-b"
-        style={{ borderColor: colors.border }}
+        style={{
+          borderColor: colors.border,
+          backgroundColor:
+            draggedItem === item.id
+              ? colors.primary + "15"
+              : colors.background,
+        }}
       >
         {/* Drag Handle */}
-        <Pressable
-          onPressIn={() => setDraggedItem(item.id)}
-          onPressOut={() => setDraggedItem(null)}
-        >
-          <MaterialIcons
-            name="drag-handle"
-            size={20}
-            color={draggedItem === item.id ? colors.primary : colors.muted}
-          />
-        </Pressable>
+        {sortableMode && (
+          <Pressable
+            onPressIn={() => setDraggedItem(item.id)}
+            onPressOut={() => setDraggedItem(null)}
+          >
+            <MaterialIcons
+              name="drag-handle"
+              size={20}
+              color={draggedItem === item.id ? colors.primary : colors.muted}
+            />
+          </Pressable>
+        )}
 
         {/* Color Preview */}
         {showColorPicker && item.hexCode && (
@@ -182,6 +220,7 @@ export function CRUDList({
             setEditingId(null);
             setInputValue("");
             setColorValue("#000000");
+            setSelectedParentId("");
             setModalVisible(true);
           }}
           style={({ pressed }) => [{ opacity: pressed ? 0.6 : 1 }]}
@@ -230,104 +269,177 @@ export function CRUDList({
             className="rounded-t-2xl p-6 gap-4"
             style={{ backgroundColor: colors.background }}
           >
-            {/* Close Button */}
-            <Pressable onPress={() => setModalVisible(false)}>
-              <MaterialIcons name="close" size={24} color={colors.foreground} />
-            </Pressable>
+            <ScrollView showsVerticalScrollIndicator={false}>
+              {/* Close Button */}
+              <Pressable onPress={() => setModalVisible(false)}>
+                <MaterialIcons
+                  name="close"
+                  size={24}
+                  color={colors.foreground}
+                />
+              </Pressable>
 
-            {/* Title */}
-            <Text
-              className="text-xl font-bold text-foreground"
-              style={{ fontFamily: "Cairo" }}
-            >
-              {editingId ? "تعديل" : "إضافة جديد"}
-            </Text>
+              {/* Title */}
+              <Text
+                className="text-xl font-bold text-foreground mt-2"
+                style={{ fontFamily: "Cairo" }}
+              >
+                {editingId ? "تعديل" : "إضافة جديد"}
+              </Text>
 
-            {/* Input */}
-            <TextInput
-              placeholder={`أدخل اسم ${title}`}
-              value={inputValue}
-              onChangeText={setInputValue}
-              className="border rounded-lg px-4 py-3"
-              style={{
-                borderColor: colors.border,
-                color: colors.foreground,
-                fontFamily: "Cairo",
-              }}
-              placeholderTextColor={colors.muted}
-            />
-
-            {/* Color Picker */}
-            {showColorPicker && (
-              <View className="gap-2">
-                <Text
-                  className="font-semibold text-foreground"
-                  style={{ fontFamily: "Cairo" }}
-                >
-                  اختر اللون
-                </Text>
-                <View className="flex-row gap-2 flex-wrap">
-                  {[
-                    "#000000",
-                    "#FFFFFF",
-                    "#C41E3A",
-                    "#1B3A70",
-                    "#E8E8E8",
-                    "#808080",
-                    "#D4A574",
-                    "#A0826D",
-                  ].map((color) => (
-                    <Pressable
-                      key={color}
-                      onPress={() => setColorValue(color)}
-                      style={({ pressed }) => [
-                        { opacity: pressed ? 0.7 : 1 },
-                      ]}
-                    >
-                      <View
-                        className="w-12 h-12 rounded-lg border-4"
-                        style={{
-                          backgroundColor: color,
-                          borderColor:
-                            colorValue === color
-                              ? colors.primary
-                              : colors.border,
-                        }}
-                      />
-                    </Pressable>
-                  ))}
+              {/* Parent Selection */}
+              {requiresParent && (
+                <View className="gap-2 mt-4">
+                  <Text
+                    className="text-sm font-semibold text-foreground"
+                    style={{ fontFamily: "Cairo" }}
+                  >
+                    اختر العنصر الأب
+                  </Text>
+                  <View
+                    className="border rounded-lg p-3"
+                    style={{ borderColor: colors.border }}
+                  >
+                    <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                      {parentItems.map((parent) => (
+                        <Pressable
+                          key={parent.id}
+                          onPress={() => setSelectedParentId(parent.id)}
+                          style={({ pressed }) => [
+                            {
+                              opacity: pressed ? 0.7 : 1,
+                              paddingHorizontal: 12,
+                              paddingVertical: 8,
+                              marginRight: 8,
+                              borderRadius: 8,
+                              backgroundColor:
+                                selectedParentId === parent.id
+                                  ? colors.primary
+                                  : colors.surface,
+                            },
+                          ]}
+                        >
+                          <Text
+                            style={{
+                              fontFamily: "Cairo",
+                              color:
+                                selectedParentId === parent.id
+                                  ? "#FFFFFF"
+                                  : colors.foreground,
+                            }}
+                          >
+                            {parent.name}
+                          </Text>
+                        </Pressable>
+                      ))}
+                    </ScrollView>
+                  </View>
                 </View>
+              )}
+
+              {/* Input */}
+              <View className="gap-2 mt-4">
+                <Text
+                  className="text-sm font-semibold text-foreground"
+                  style={{ fontFamily: "Cairo" }}
+                >
+                  {`أدخل اسم ${title}`}
+                </Text>
+                <TextInput
+                  placeholder={`أدخل اسم ${title}`}
+                  value={inputValue}
+                  onChangeText={setInputValue}
+                  className="border rounded-lg p-3 text-foreground"
+                  style={{
+                    borderColor: colors.border,
+                    color: colors.foreground,
+                    fontFamily: "Cairo",
+                  }}
+                  placeholderTextColor={colors.muted}
+                />
               </View>
-            )}
 
-            {/* Buttons */}
-            <View className="flex-row gap-3 mt-4">
-              <Pressable
-                onPress={() => setModalVisible(false)}
-                className="flex-1 py-3 rounded-lg border"
-                style={{ borderColor: colors.border }}
-              >
-                <Text
-                  className="text-center font-semibold text-foreground"
-                  style={{ fontFamily: "Cairo" }}
-                >
-                  إلغاء
-                </Text>
-              </Pressable>
+              {/* Color Picker */}
+              {showColorPicker && (
+                <View className="gap-2 mt-4">
+                  <Text
+                    className="text-sm font-semibold text-foreground"
+                    style={{ fontFamily: "Cairo" }}
+                  >
+                    اختر اللون
+                  </Text>
+                  <View className="flex-row items-center gap-3">
+                    <View
+                      className="w-12 h-12 rounded-lg border-2"
+                      style={{
+                        backgroundColor: colorValue,
+                        borderColor: colors.border,
+                      }}
+                    />
+                    <TextInput
+                      placeholder="#000000"
+                      value={colorValue}
+                      onChangeText={setColorValue}
+                      className="flex-1 border rounded-lg p-2 text-foreground"
+                      style={{
+                        borderColor: colors.border,
+                        color: colors.foreground,
+                        fontFamily: "Cairo",
+                      }}
+                      placeholderTextColor={colors.muted}
+                    />
+                  </View>
+                </View>
+              )}
 
-              <Pressable
-                onPress={handleAdd}
-                className="flex-1 py-3 rounded-lg items-center justify-center"
-                style={{ backgroundColor: colors.primary }}
-              >
-                <Text
-                  className="font-semibold text-white"
-                  style={{ fontFamily: "Cairo" }}
+              {/* Buttons */}
+              <View className="flex-row gap-3 mt-6">
+                <Pressable
+                  onPress={() => setModalVisible(false)}
+                  style={({ pressed }) => [
+                    {
+                      flex: 1,
+                      padding: 12,
+                      borderRadius: 8,
+                      backgroundColor: colors.surface,
+                      opacity: pressed ? 0.7 : 1,
+                    },
+                  ]}
                 >
-                  {editingId ? "تحديث" : "إضافة"}
-                </Text>
-              </Pressable>
-            </View>
+                  <Text
+                    className="text-center font-semibold text-foreground"
+                    style={{ fontFamily: "Cairo" }}
+                  >
+                    إلغاء
+                  </Text>
+                </Pressable>
+                <Pressable
+                  onPress={handleAdd}
+                  style={({ pressed }) => [
+                    {
+                      flex: 1,
+                      padding: 12,
+                      borderRadius: 8,
+                      backgroundColor: colors.primary,
+                      opacity:
+                        requiresParent && !selectedParentId
+                          ? 0.5
+                          : pressed
+                            ? 0.8
+                            : 1,
+                    },
+                  ]}
+                  disabled={requiresParent && !selectedParentId}
+                >
+                  <Text
+                    className="text-center font-semibold text-white"
+                    style={{ fontFamily: "Cairo" }}
+                  >
+                    {editingId ? "تحديث" : "إضافة"}
+                  </Text>
+                </Pressable>
+              </View>
+            </ScrollView>
           </View>
         </View>
       </Modal>
