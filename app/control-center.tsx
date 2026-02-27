@@ -30,7 +30,7 @@ const controlOptions: ControlOption[] = [
     description: "الوقود، الناقل، الدفع، المحرك",
     icon: "settings",
     color: "#C41E3A",
-    route: "/control-center/technical",
+    route: "/technical-specs",
   },
   {
     id: "legal",
@@ -38,7 +38,7 @@ const controlOptions: ControlOption[] = [
     description: "الجمارك، اللوحات، الشاصيه",
     icon: "verified",
     color: "#E8E8E8",
-    route: "/control-center/legal",
+    route: "/legal-status",
   },
   {
     id: "source",
@@ -46,7 +46,7 @@ const controlOptions: ControlOption[] = [
     description: "التصنيف، التتبع، الحالات",
     icon: "location-on",
     color: "#1B3A70",
-    route: "/control-center/source",
+    route: "/source-status",
   },
   {
     id: "notifications",
