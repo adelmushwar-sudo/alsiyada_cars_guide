@@ -3,7 +3,7 @@ import { View, Text, ScrollView, Pressable } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { ScreenContainer } from "@/components/screen-container";
-import { CRUDListEnhanced, type CRUDItem } from "@/components/crud-list-enhanced";
+import { CRUDListMultiSelect, type CRUDItem } from "@/components/crud-list-multi-select";
 import { useColors } from "@/hooks/use-colors";
 
 const SECTION_CONFIG = {
@@ -25,29 +25,29 @@ const SECTION_CONFIG = {
     title: "فئات السيارات",
     icon: "category",
     showColorPicker: false,
-    requiresParent: true,
-    parentLabel: "اختر الموديل",
+    multiSelect: true,
+    selectLabel: "اختر الموديلات",
   },
   "exterior-colors": {
     title: "الألوان الخارجية",
     icon: "palette",
     showColorPicker: true,
-    requiresParent: true,
-    parentLabel: "اختر الموديل",
+    multiSelect: true,
+    selectLabel: "اختر الموديلات",
   },
   "interior-colors": {
     title: "الألوان الداخلية",
     icon: "home-fill",
     showColorPicker: true,
-    requiresParent: true,
-    parentLabel: "اختر الموديل",
+    multiSelect: true,
+    selectLabel: "اختر الموديلات",
   },
   "regional-specs": {
     title: "المواصفات الإقليمية",
     icon: "public",
     showColorPicker: false,
-    requiresParent: true,
-    parentLabel: "اختر الموديل",
+    multiSelect: true,
+    selectLabel: "اختر الموديلات",
   },
 };
 
@@ -80,13 +80,13 @@ export default function ManagementSection() {
       id: "m1",
       name: "لاند كروزر",
       order: 1,
-      parentId: "1",
+      selectedIds: ["1"],
     },
     {
       id: "m2",
       name: "كامري",
       order: 2,
-      parentId: "1",
+      selectedIds: ["1"],
     },
   ]);
 
@@ -95,13 +95,13 @@ export default function ManagementSection() {
       id: "t1",
       name: "GXR",
       order: 1,
-      parentId: "m1",
+      selectedIds: ["m1"],
     },
     {
       id: "t2",
       name: "VXR",
       order: 2,
-      parentId: "m1",
+      selectedIds: ["m1"],
     },
   ]);
 
@@ -111,14 +111,14 @@ export default function ManagementSection() {
       name: "أبيض لؤلؤي",
       order: 1,
       hexCode: "#FFFFFF",
-      parentId: "m1",
+      selectedIds: ["m1"],
     },
     {
       id: "ec2",
       name: "أسود معدني",
       order: 2,
       hexCode: "#000000",
-      parentId: "m1",
+      selectedIds: ["m1"],
     },
   ]);
 
@@ -128,7 +128,7 @@ export default function ManagementSection() {
       name: "بني فاتح",
       order: 1,
       hexCode: "#8B4513",
-      parentId: "m1",
+      selectedIds: ["m1"],
     },
   ]);
 
@@ -137,7 +137,7 @@ export default function ManagementSection() {
       id: "rs1",
       name: "خليجي",
       order: 1,
-      parentId: "m1",
+      selectedIds: ["m1"],
     },
   ]);
 
@@ -178,21 +178,21 @@ export default function ManagementSection() {
 
   const { items, setItems, parentItems } = getDataAndSetter();
 
-  const handleAdd = (name: string, hexCode?: string, parentId?: string) => {
+  const handleAdd = (name: string, hexCode?: string, selectedIds?: string[]) => {
     const newItem: CRUDItem = {
       id: Date.now().toString(),
       name,
       order: items.length + 1,
-      hexCode,
-      parentId,
+      hexCode: hexCode || undefined,
+      selectedIds: selectedIds || undefined,
     };
     setItems([...items, newItem]);
   };
 
-  const handleUpdate = (id: string, name: string, hexCode?: string) => {
+  const handleUpdate = (id: string, name: string, hexCode?: string, selectedIds?: string[]) => {
     setItems(
       items.map((item) =>
-        item.id === id ? { ...item, name, hexCode: hexCode || item.hexCode } : item
+        item.id === id ? { ...item, name, hexCode: hexCode || item.hexCode, selectedIds: selectedIds || item.selectedIds } : item
       )
     );
   };
@@ -235,7 +235,7 @@ export default function ManagementSection() {
       </View>
 
       {/* Content */}
-      <CRUDListEnhanced
+      <CRUDListMultiSelect
         title={config.title || ""}
         icon={config.icon || "list"}
         items={items}
@@ -244,9 +244,9 @@ export default function ManagementSection() {
         onDelete={handleDelete}
         onReorder={handleReorder}
         showColorPicker={config.showColorPicker || false}
-        requiresParent={config.requiresParent || false}
-        parentItems={parentItems}
-        parentLabel={config.parentLabel}
+        multiSelect={(config as any).multiSelect || false}
+        selectableItems={sectionId === "models" ? brands : models}
+        selectLabel={(config as any).selectLabel || "اختر العناصر"}
       />
     </ScreenContainer>
   );
