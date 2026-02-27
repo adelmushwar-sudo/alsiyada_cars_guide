@@ -11,6 +11,7 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import * as Haptics from "expo-haptics";
 import { useColors } from "@/hooks/use-colors";
 import { CenteredModal } from "./centered-modal";
+import { useToast } from "@/lib/toast-provider";
 
 export interface CRUDItem {
   id: string;
@@ -48,6 +49,7 @@ export function CRUDListMultiSelect({
   selectLabel = "اختر العناصر",
 }: CRUDListMultiSelectProps) {
   const colors = useColors();
+  const { showToast } = useToast();
   const [modalVisible, setModalVisible] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [sortableMode, setSortableMode] = useState(false);
@@ -74,9 +76,11 @@ export function CRUDListMultiSelect({
   }) => {
     if (editingId) {
       onUpdate(editingId, data.name, data.hexCode, data.selectedIds);
+      showToast(`تم تحديث ${title} بنجاح`, "success");
       setEditingId(null);
     } else {
       onAdd(data.name, data.hexCode, data.selectedIds);
+      showToast(`تمت إضافة ${title} جديد بنجاح`, "success");
     }
     setModalVisible(false);
   };
@@ -86,7 +90,10 @@ export function CRUDListMultiSelect({
       { text: "إلغاء", style: "cancel" },
       {
         text: "حذف",
-        onPress: () => onDelete(id),
+        onPress: () => {
+          onDelete(id);
+          showToast(`تم حذف ${title} بنجاح`, "delete");
+        },
         style: "destructive",
       },
     ]);
@@ -111,6 +118,7 @@ export function CRUDListMultiSelect({
           order: i + 1,
         }))
       );
+      showToast("تم تحريك العنصر لأعلى", "info");
 
       if (Platform.OS !== "web") {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -128,6 +136,7 @@ export function CRUDListMultiSelect({
           order: i + 1,
         }))
       );
+      showToast("تم تحريك العنصر لأسفل", "info");
 
       if (Platform.OS !== "web") {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);

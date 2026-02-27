@@ -211,3 +211,20 @@
 - [x] تفعيل السحب بعد إغلاق النافذة المنبثقة
 - [x] اختبار شامل للمكونات الجديدة (37 اختبار ناجح)
 - [x] التحقق من عدم وجود أخطاء أو Crashes (185 اختبار إجمالي ناجح)
+
+
+## المرحلة الثامنة عشرة: منطق الاختيار والإشعارات وحل Build Timeout
+
+- [x] بناء نظام Toast Notifications مع أنواع مختلفة (Success, Error, Warning, Delete, Info)
+- [x] إنشاء Toast Provider و useToast Hook
+- [x] بناء Single Select Dropdown للماركات
+- [x] تعديل منطق الاختيار للماركات من Multi-Select إلى Single Selection
+- [x] إضافة Dropdown للماركات مع بحث داخلي
+- [x] تعطيل زر الإضافة حتى اختيار ماركة واحدة فقط
+- [x] تطبيق Toast Notifications على عمليات الإضافة (Success)
+- [x] تطبيق Toast Notifications على عمليات التعديل (Success)
+- [x] تطبيق Toast Notifications على عمليات الحذف (Delete)
+- [x] مراجعة ملف app.config.ts - بدون تعارضات
+- [x] مراجعة package.json - جميع المكتبات محدثة ومتوافقة
+- [x] اختبار شامل للمكونات الجديدة (34 اختبار ناجح)
+- [x] التحقق من عدم وجود أخطاء أو Crashes (219 اختبار إجمالي ناجح)
