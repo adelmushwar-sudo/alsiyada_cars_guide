@@ -6,6 +6,7 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { ScreenContainer } from "@/components/screen-container";
 import { AppHeader } from "@/components/app-header";
 import { FloatingActionButton } from "@/components/floating-action-button";
+import { ModernCarCard } from "@/components/modern-car-card";
 import { useColors } from "@/hooks/use-colors";
 
 interface Car {
@@ -15,11 +16,19 @@ interface Car {
   year: number;
   price: number;
   status: "available" | "sold" | "reserved";
-  supplier?: string;
   location: "showroom" | "supplier" | "external";
+  category?: string;
+  mileage?: number;
+  fuelType?: string;
+  transmission?: string;
+  driveType?: string;
+  engineSize?: string;
+  customsStatus?: string;
+  regionalSpec?: string;
+  images?: Array<{ id: string; url?: string }>;
 }
 
-// بيانات تجريبية
+// بيانات تجريبية محسّنة مع معلومات إضافية
 const SAMPLE_CARS: Car[] = [
   {
     id: "1",
@@ -29,6 +38,20 @@ const SAMPLE_CARS: Car[] = [
     price: 250000,
     status: "available",
     location: "showroom",
+    category: "SUV",
+    mileage: 15000,
+    fuelType: "بنزين",
+    transmission: "أوتوماتيك",
+    driveType: "دفع رباعي",
+    engineSize: "3.0L",
+    customsStatus: "مُخلصة",
+    regionalSpec: "خليجي",
+    images: [
+      { id: "1-1" },
+      { id: "1-2" },
+      { id: "1-3" },
+      { id: "1-4" },
+    ],
   },
   {
     id: "2",
@@ -37,8 +60,20 @@ const SAMPLE_CARS: Car[] = [
     year: 2022,
     price: 280000,
     status: "available",
-    supplier: "الموردين الرئيسيين",
     location: "supplier",
+    category: "سيدان",
+    mileage: 28000,
+    fuelType: "بنزين",
+    transmission: "أوتوماتيك",
+    driveType: "دفع أمامي",
+    engineSize: "2.0L",
+    customsStatus: "مُخلصة",
+    regionalSpec: "أوروبي",
+    images: [
+      { id: "2-1" },
+      { id: "2-2" },
+      { id: "2-3" },
+    ],
   },
   {
     id: "3",
@@ -48,6 +83,18 @@ const SAMPLE_CARS: Car[] = [
     price: 240000,
     status: "reserved",
     location: "external",
+    category: "سيدان",
+    mileage: 12000,
+    fuelType: "ديزل",
+    transmission: "أوتوماتيك",
+    driveType: "دفع رباعي",
+    engineSize: "2.0L",
+    customsStatus: "مُخلصة",
+    regionalSpec: "خليجي",
+    images: [
+      { id: "3-1" },
+      { id: "3-2" },
+    ],
   },
   {
     id: "4",
@@ -57,6 +104,64 @@ const SAMPLE_CARS: Car[] = [
     price: 220000,
     status: "available",
     location: "showroom",
+    category: "SUV",
+    mileage: 8000,
+    fuelType: "بنزين",
+    transmission: "أوتوماتيك",
+    driveType: "دفع رباعي",
+    engineSize: "5.7L",
+    customsStatus: "مُخلصة",
+    regionalSpec: "خليجي",
+    images: [
+      { id: "4-1" },
+      { id: "4-2" },
+      { id: "4-3" },
+      { id: "4-4" },
+      { id: "4-5" },
+    ],
+  },
+  {
+    id: "5",
+    brand: "Lexus",
+    model: "RX 350",
+    year: 2023,
+    price: 195000,
+    status: "available",
+    location: "showroom",
+    category: "SUV",
+    mileage: 5000,
+    fuelType: "بنزين هجين",
+    transmission: "أوتوماتيك",
+    driveType: "دفع رباعي",
+    engineSize: "3.5L",
+    customsStatus: "مُخلصة",
+    regionalSpec: "خليجي",
+    images: [
+      { id: "5-1" },
+      { id: "5-2" },
+    ],
+  },
+  {
+    id: "6",
+    brand: "Porsche",
+    model: "911",
+    year: 2022,
+    price: 420000,
+    status: "sold",
+    location: "supplier",
+    category: "رياضي",
+    mileage: 18000,
+    fuelType: "بنزين",
+    transmission: "أوتوماتيك",
+    driveType: "دفع خلفي",
+    engineSize: "3.0L",
+    customsStatus: "مُخلصة",
+    regionalSpec: "أوروبي",
+    images: [
+      { id: "6-1" },
+      { id: "6-2" },
+      { id: "6-3" },
+    ],
   },
 ];
 
@@ -81,45 +186,6 @@ export default function OurInventoryScreen() {
   const filteredCars = selectedLocation === "all" 
     ? SAMPLE_CARS 
     : SAMPLE_CARS.filter(car => car.location === selectedLocation);
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "available":
-        return colors.success;
-      case "sold":
-        return colors.error;
-      case "reserved":
-        return colors.warning;
-      default:
-        return colors.muted;
-    }
-  };
-
-  const getLocationLabel = (location: string) => {
-    switch (location) {
-      case "showroom":
-        return "المعرض";
-      case "supplier":
-        return "الموردين";
-      case "external":
-        return "خارجي";
-      default:
-        return location;
-    }
-  };
-
-  const getStatusLabel = (status: string) => {
-    switch (status) {
-      case "available":
-        return "متاح";
-      case "sold":
-        return "مباع";
-      case "reserved":
-        return "محجوز";
-      default:
-        return status;
-    }
-  };
 
   return (
     <View className="flex-1 bg-background">
@@ -187,89 +253,26 @@ export default function OurInventoryScreen() {
               </View>
             ) : (
               filteredCars.map((car) => (
-                <Pressable
+                <ModernCarCard
                   key={car.id}
+                  id={car.id}
+                  brand={car.brand}
+                  model={car.model}
+                  year={car.year}
+                  price={car.price}
+                  status={car.status}
+                  location={car.location}
+                  category={car.category}
+                  mileage={car.mileage}
+                  fuelType={car.fuelType}
+                  transmission={car.transmission}
+                  driveType={car.driveType}
+                  engineSize={car.engineSize}
+                  customsStatus={car.customsStatus}
+                  regionalSpec={car.regionalSpec}
+                  images={car.images}
                   onPress={() => handleCarPress(car.id)}
-                  style={({ pressed }) => [
-                    {
-                      marginBottom: 12,
-                      opacity: pressed ? 0.8 : 1,
-                    },
-                  ]}
-                >
-                  <View
-                    className="bg-surface rounded-lg p-4 border border-border"
-                    style={{
-                      borderLeftColor: colors.primary,
-                      borderLeftWidth: 4,
-                    }}
-                  >
-                    {/* رأس البطاقة - الماركة والموديل والسعر */}
-                    <View className="flex-row justify-between items-start mb-3">
-                      <View className="flex-1">
-                        <Text
-                          className="text-lg font-bold text-foreground"
-                          style={{ fontFamily: "Cairo" }}
-                        >
-                          {car.brand} {car.model}
-                        </Text>
-                        <Text className="text-sm text-muted mt-1" style={{ fontFamily: "Cairo" }}>
-                          {car.year}
-                        </Text>
-                      </View>
-                      <View className="items-end">
-                        <Text
-                          className="text-lg font-bold text-primary"
-                          style={{ fontFamily: "Cairo" }}
-                        >
-                          {car.price.toLocaleString()} ر.س
-                        </Text>
-                      </View>
-                    </View>
-
-                    {/* معلومات إضافية */}
-                    <View className="flex-row justify-between items-center">
-                      {/* الحالة */}
-                      <View
-                        className="flex-row items-center gap-2 px-3 py-2 rounded-full"
-                        style={{ backgroundColor: getStatusColor(car.status) + "20" }}
-                      >
-                        <MaterialIcons
-                          name={
-                            car.status === "available"
-                              ? "check-circle"
-                              : car.status === "sold"
-                              ? "cancel"
-                              : "schedule"
-                          }
-                          size={16}
-                          color={getStatusColor(car.status)}
-                        />
-                        <Text
-                          className="text-sm font-semibold"
-                          style={{
-                            color: getStatusColor(car.status),
-                            fontFamily: "Cairo",
-                          }}
-                        >
-                          {getStatusLabel(car.status)}
-                        </Text>
-                      </View>
-
-                      {/* الموقع */}
-                      <View className="flex-row items-center gap-1">
-                        <MaterialIcons
-                          name="location-on"
-                          size={16}
-                          color={colors.muted}
-                        />
-                        <Text className="text-xs text-muted" style={{ fontFamily: "Cairo" }}>
-                          {getLocationLabel(car.location)}
-                        </Text>
-                      </View>
-                    </View>
-                  </View>
-                </Pressable>
+                />
               ))
             )}
           </View>
