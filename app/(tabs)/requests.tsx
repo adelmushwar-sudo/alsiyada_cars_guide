@@ -245,3 +245,109 @@ export default function RequestsScreen() {
     </View>
   );
 }
+                  ]}
+                >
+                  <Text
+                    className="font-semibold"
+                    style={{
+                      color: selectedStatus === status ? "#FFFFFF" : colors.foreground,
+                      fontFamily: "Cairo",
+                    }}
+                  >
+                    {status === "all" ? "الكل" : getStatusLabel(status)}
+                  </Text>
+                </Pressable>
+              ))}
+            </View>
+          </View>
+
+          <View className="px-4 pb-4">
+            <Text className="text-lg font-bold text-foreground mb-3" style={{ fontFamily: "Cairo" }}>
+              الطلبات ({filteredRequests.length})
+            </Text>
+
+            {filteredRequests.length === 0 ? (
+              <View className="items-center justify-center py-8">
+                <MaterialIcons name="assignment" size={48} color={colors.muted} />
+                <Text className="text-muted mt-2" style={{ fontFamily: "Cairo" }}>
+                  لا توجد طلبات في هذه الفئة
+                </Text>
+              </View>
+            ) : (
+              filteredRequests.map((request) => (
+                <Pressable
+                  key={request.id}
+                  onPress={() => handleRequestPress(request.id)}
+                  style={({ pressed }) => [
+                    {
+                      marginBottom: 12,
+                      opacity: pressed ? 0.8 : 1,
+                    },
+                  ]}
+                >
+                  <View
+                    className="bg-surface rounded-lg p-4 border border-border"
+                    style={{
+                      borderLeftColor: getStatusColor(request.status),
+                      borderLeftWidth: 4,
+                    }}
+                  >
+                    <View className="flex-row justify-between items-start mb-3">
+                      <View className="flex-1">
+                        <Text className="text-lg font-bold text-foreground" style={{ fontFamily: "Cairo" }}>
+                          {request.customerName}
+                        </Text>
+                        <View className="flex-row items-center gap-1 mt-1">
+                          <MaterialIcons name="phone" size={14} color={colors.muted} />
+                          <Text className="text-sm text-muted" style={{ fontFamily: "Cairo" }}>
+                            {request.customerPhone}
+                          </Text>
+                        </View>
+                      </View>
+                      <View
+                        className="flex-row items-center gap-1 px-3 py-2 rounded-full"
+                        style={{ backgroundColor: getStatusColor(request.status) + "20" }}
+                      >
+                        <MaterialIcons name={getStatusIcon(request.status)} size={16} color={getStatusColor(request.status)} />
+                        <Text
+                          className="text-xs font-semibold"
+                          style={{ color: getStatusColor(request.status), fontFamily: "Cairo" }}
+                        >
+                          {getStatusLabel(request.status)}
+                        </Text>
+                      </View>
+                    </View>
+
+                    <View className="bg-background rounded p-3 mb-3">
+                      <Text className="text-sm text-muted mb-1" style={{ fontFamily: "Cairo" }}>السيارة المطلوبة</Text>
+                      <Text className="text-base font-semibold text-foreground" style={{ fontFamily: "Cairo" }}>
+                        {request.requestedBrand} {request.requestedModel}
+                      </Text>
+                      <Text className="text-sm text-primary mt-1" style={{ fontFamily: "Cairo" }}>
+                        الميزانية: {request.budget.toLocaleString()} ر.س
+                      </Text>
+                    </View>
+
+                    <View className="flex-row justify-between items-center">
+                      <View className="flex-row items-center gap-1">
+                        <MaterialIcons name="calendar-today" size={14} color={colors.muted} />
+                        <Text className="text-xs text-muted" style={{ fontFamily: "Cairo" }}>{request.createdDate}</Text>
+                      </View>
+                      {request.notes && (
+                        <View className="flex-row items-center gap-1">
+                          <MaterialIcons name="notes" size={14} color={colors.muted} />
+                          <Text className="text-xs text-muted" style={{ fontFamily: "Cairo" }}>ملاحظات</Text>
+                        </View>
+                      )}
+                    </View>
+                  </View>
+                </Pressable>
+              ))
+            )}
+          </View>
+        </ScrollView>
+        <FloatingActionButton onPress={handleFABPress} />
+      </ScreenContainer>
+    </View>
+  );
+}
