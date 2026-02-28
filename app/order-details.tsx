@@ -1,6 +1,7 @@
 import { ScrollView, Text, View, Pressable, Platform, Linking } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -135,6 +136,17 @@ const Chip = ({ label, color }: { label: string; color?: string }) => {
   );
 };
 
+const HorizontalItem = ({ label, children }: { label: string; children: React.ReactNode }) => {
+  return (
+    <View className="flex-row items-center justify-between py-2">
+      <Text className="text-sm text-muted" style={{ fontFamily: "Cairo", width: 100 }}>{label}</Text>
+      <View className="flex-1 flex-row flex-wrap justify-end gap-2">
+        {children}
+      </View>
+    </View>
+  );
+};
+
 const RangeDisplay = ({ from, to, unit, label }: { from: string | number; to: string | number; unit?: string; label: string }) => {
   const colors = useColors();
   return (
@@ -155,7 +167,7 @@ const RangeDisplay = ({ from, to, unit, label }: { from: string | number; to: st
   );
 };
 
-const ActionButton = ({ icon, label, color, onPress }: { icon: keyof typeof MaterialIcons.glyphMap; label: string; color: string; onPress: () => void }) => {
+const ActionButton = ({ icon, label, color, onPress, isFontAwesome = false }: { icon: any; label: string; color: string; onPress: () => void; isFontAwesome?: boolean }) => {
   return (
     <Pressable
       onPress={onPress}
@@ -166,9 +178,13 @@ const ActionButton = ({ icon, label, color, onPress }: { icon: keyof typeof Mate
         className="w-12 h-12 rounded-2xl items-center justify-center shadow-sm"
         style={{ backgroundColor: color }}
       >
-        <MaterialIcons name={icon} size={24} color="#FFFFFF" />
+        {isFontAwesome ? (
+          <FontAwesome6 name={icon} size={22} color="#FFFFFF" />
+        ) : (
+          <MaterialIcons name={icon} size={24} color="#FFFFFF" />
+        )}
       </View>
-      <Text className="text-[10px] text-muted font-bold" style={{ fontFamily: "Cairo" }}>{label}</Text>
+      <Text className="text-[10px] text-muted font-bold text-center" style={{ fontFamily: "Cairo", width: 50 }}>{label}</Text>
     </Pressable>
   );
 };
@@ -203,17 +219,19 @@ export default function OrderDetailsScreen() {
           >
             <MaterialIcons name="arrow-back" size={24} color={colors.primary} />
           </Pressable>
-          <Text
-            className="text-lg font-bold text-foreground flex-1 text-center"
-            style={{ fontFamily: "Cairo" }}
-          >
-            تفاصيل الطلب
-          </Text>
+          <View className="flex-1 px-2">
+            <Text
+              className="text-lg font-bold text-foreground text-right"
+              style={{ fontFamily: "Cairo" }}
+            >
+              تفاصيل الطلب
+            </Text>
+            <Text className="text-[10px] text-muted text-right" style={{ fontFamily: "Cairo" }}>
+              تاريخ الطلب: {order.orderDate}
+            </Text>
+          </View>
           <StatusBadge status={order.status} />
         </View>
-        <Text className="text-xs text-muted text-center" style={{ fontFamily: "Cairo" }}>
-          تاريخ الطلب: {order.orderDate}
-        </Text>
       </View>
 
       <ScreenContainer className="flex-1 p-0">
@@ -223,45 +241,36 @@ export default function OrderDetailsScreen() {
         >
           {/* قسم معلومات العميل */}
           <View className="bg-surface rounded-2xl border border-border p-5 mb-6 shadow-sm">
-            <View className="flex-row items-center justify-between mb-6">
-              <View className="flex-1">
-                <Text className="text-xs text-muted mb-1" style={{ fontFamily: "Cairo" }}>اسم صاحب الطلب</Text>
-                <Text className="text-xl font-bold text-foreground" style={{ fontFamily: "Cairo" }}>{order.customerName}</Text>
-              </View>
-              <View className="items-end">
+            <View className="mb-4">
+              <Text className="text-xs text-muted mb-1" style={{ fontFamily: "Cairo" }}>اسم صاحب الطلب</Text>
+              <Text className="text-xl font-bold text-foreground" style={{ fontFamily: "Cairo" }}>{order.customerName}</Text>
+            </View>
+
+            <View className="flex-row items-center justify-between pt-4 border-t border-border">
+              <View>
                 <Text className="text-xs text-muted mb-1" style={{ fontFamily: "Cairo" }}>رقم الهاتف</Text>
                 <Text className="text-base font-bold text-foreground" style={{ fontFamily: "Cairo" }}>{order.customerPhone}</Text>
               </View>
-            </View>
-
-            <View className="flex-row justify-around pt-2 border-t border-border">
-              <ActionButton icon="chat" label="واتساب" color="#25D366" onPress={handleWhatsApp} />
-              <ActionButton icon="phone" label="اتصال" color={colors.success} onPress={handleCall} />
-              <ActionButton icon="message" label="SMS" color={colors.primary} onPress={handleSMS} />
+              <View className="flex-row gap-4">
+                <ActionButton icon="whatsapp" label="واتساب" color="#25D366" onPress={handleWhatsApp} isFontAwesome />
+                <ActionButton icon="phone" label="اتصال" color={colors.success} onPress={handleCall} />
+                <ActionButton icon="message" label="SMS" color={colors.primary} onPress={handleSMS} />
+              </View>
             </View>
           </View>
 
           {/* بطاقة البيانات الأساسية */}
           <SectionCard title="البيانات الأساسية" icon="directions-car">
-            <View className="gap-4">
-              <View>
-                <Text className="text-xs text-muted mb-2" style={{ fontFamily: "Cairo" }}>الماركة</Text>
-                <View className="flex-row flex-wrap gap-2">
-                  {order.brands.map((b, i) => <Chip key={i} label={b} color={colors.primary + "10"} />)}
-                </View>
-              </View>
-              <View>
-                <Text className="text-xs text-muted mb-2" style={{ fontFamily: "Cairo" }}>الموديل</Text>
-                <View className="flex-row flex-wrap gap-2">
-                  {order.models.map((m, i) => <Chip key={i} label={m} />)}
-                </View>
-              </View>
-              <View>
-                <Text className="text-xs text-muted mb-2" style={{ fontFamily: "Cairo" }}>الفئة</Text>
-                <View className="flex-row flex-wrap gap-2">
-                  {order.categories.map((c, i) => <Chip key={i} label={c} />)}
-                </View>
-              </View>
+            <View className="gap-2">
+              <HorizontalItem label="الماركة">
+                {order.brands.map((b, i) => <Chip key={i} label={b} color={colors.primary + "10"} />)}
+              </HorizontalItem>
+              <HorizontalItem label="الموديل">
+                {order.models.map((m, i) => <Chip key={i} label={m} />)}
+              </HorizontalItem>
+              <HorizontalItem label="الفئة">
+                {order.categories.map((c, i) => <Chip key={i} label={c} />)}
+              </HorizontalItem>
             </View>
           </SectionCard>
 
@@ -275,30 +284,21 @@ export default function OrderDetailsScreen() {
           {/* بطاقة المظهر والمواصفات */}
           {(order.exteriorColors?.length || order.interiorColors?.length || order.regionalSpecs?.length) ? (
             <SectionCard title="المظهر والمواصفات" icon="palette">
-              <View className="gap-4">
+              <View className="gap-2">
                 {order.exteriorColors && (
-                  <View>
-                    <Text className="text-xs text-muted mb-2" style={{ fontFamily: "Cairo" }}>الألوان الخارجية</Text>
-                    <View className="flex-row flex-wrap gap-2">
-                      {order.exteriorColors.map((c, i) => <Chip key={i} label={c} />)}
-                    </View>
-                  </View>
+                  <HorizontalItem label="الألوان الخارجية">
+                    {order.exteriorColors.map((c, i) => <Chip key={i} label={c} />)}
+                  </HorizontalItem>
                 )}
                 {order.interiorColors && (
-                  <View>
-                    <Text className="text-xs text-muted mb-2" style={{ fontFamily: "Cairo" }}>الألوان الداخلية</Text>
-                    <View className="flex-row flex-wrap gap-2">
-                      {order.interiorColors.map((c, i) => <Chip key={i} label={c} />)}
-                    </View>
-                  </View>
+                  <HorizontalItem label="الألوان الداخلية">
+                    {order.interiorColors.map((c, i) => <Chip key={i} label={c} />)}
+                  </HorizontalItem>
                 )}
                 {order.regionalSpecs && (
-                  <View>
-                    <Text className="text-xs text-muted mb-2" style={{ fontFamily: "Cairo" }}>المواصفات الإقليمية</Text>
-                    <View className="flex-row flex-wrap gap-2">
-                      {order.regionalSpecs.map((s, i) => <Chip key={i} label={s} />)}
-                    </View>
-                  </View>
+                  <HorizontalItem label="المواصفات الإقليمية">
+                    {order.regionalSpecs.map((s, i) => <Chip key={i} label={s} />)}
+                  </HorizontalItem>
                 )}
               </View>
             </SectionCard>
@@ -312,54 +312,42 @@ export default function OrderDetailsScreen() {
             <Text className="text-xs text-white opacity-80 mb-4 text-center" style={{ fontFamily: "Cairo" }}>حدود الميزانية المطلوبة</Text>
             <View className="flex-row items-center justify-center gap-4">
               <View className="bg-white/10 rounded-xl px-4 py-3 items-center border border-white/20">
-                <Text className="text-xl font-bold text-white" style={{ fontFamily: "Cairo" }}>{order.priceRange.min.toLocaleString()}</Text>
+                <Text className="text-xl font-bold text-white" style={{ fontFamily: "Cairo" }}>
+                  {order.priceRange.min.toLocaleString()} {order.priceRange.currency === "SAR" ? "ر.س" : "$"}
+                </Text>
               </View>
               <View className="w-6 h-0.5 bg-white/30" />
               <View className="bg-white/10 rounded-xl px-4 py-3 items-center border border-white/20">
-                <Text className="text-xl font-bold text-white" style={{ fontFamily: "Cairo" }}>{order.priceRange.max.toLocaleString()}</Text>
+                <Text className="text-xl font-bold text-white" style={{ fontFamily: "Cairo" }}>
+                  {order.priceRange.max.toLocaleString()} {order.priceRange.currency === "SAR" ? "ر.س" : "$"}
+                </Text>
               </View>
-              <Text className="text-lg font-bold text-white ml-2" style={{ fontFamily: "Cairo" }}>{order.priceRange.currency === "SAR" ? "ر.س" : "$"}</Text>
             </View>
           </View>
 
           {/* المواصفات التقنية */}
           <SectionCard title="المواصفات التقنية" icon="settings">
-            <View className="gap-4">
-              <View>
-                <Text className="text-xs text-muted mb-2" style={{ fontFamily: "Cairo" }}>نوع الوقود</Text>
-                <View className="flex-row flex-wrap gap-2">
-                  {order.fuelTypes.map((t, i) => <Chip key={i} label={t} />)}
-                </View>
-              </View>
-              <View>
-                <Text className="text-xs text-muted mb-2" style={{ fontFamily: "Cairo" }}>ناقل الحركة</Text>
-                <View className="flex-row flex-wrap gap-2">
-                  {order.transmissions.map((t, i) => <Chip key={i} label={t} />)}
-                </View>
-              </View>
-              <View>
-                <Text className="text-xs text-muted mb-2" style={{ fontFamily: "Cairo" }}>نظام الدفع</Text>
-                <View className="flex-row flex-wrap gap-2">
-                  {order.driveTypes.map((d, i) => <Chip key={i} label={d} />)}
-                </View>
-              </View>
-              <View>
-                <Text className="text-xs text-muted mb-2" style={{ fontFamily: "Cairo" }}>المواصفات الإضافية</Text>
-                <View className="flex-row flex-wrap gap-2">
-                  {order.additionalFeatures.map((f, i) => <Chip key={i} label={f} color={colors.primary + "05"} />)}
-                </View>
-              </View>
+            <View className="gap-2">
+              <HorizontalItem label="نوع الوقود">
+                {order.fuelTypes.map((t, i) => <Chip key={i} label={t} />)}
+              </HorizontalItem>
+              <HorizontalItem label="ناقل الحركة">
+                {order.transmissions.map((t, i) => <Chip key={i} label={t} />)}
+              </HorizontalItem>
+              <HorizontalItem label="نظام الدفع">
+                {order.driveTypes.map((d, i) => <Chip key={i} label={d} />)}
+              </HorizontalItem>
+              <HorizontalItem label="المواصفات الإضافية">
+                {order.additionalFeatures.map((f, i) => <Chip key={i} label={f} color={colors.primary + "05"} />)}
+              </HorizontalItem>
             </View>
           </SectionCard>
 
           {/* الحالة القانونية */}
           <SectionCard title="الحالة القانونية" icon="verified">
-            <View>
-              <Text className="text-xs text-muted mb-2" style={{ fontFamily: "Cairo" }}>حالة الجمارك المطلوبة</Text>
-              <View className="flex-row flex-wrap gap-2">
-                {order.customsStatus.map((s, i) => <Chip key={i} label={s} />)}
-              </View>
-            </View>
+            <HorizontalItem label="حالة الجمارك">
+              {order.customsStatus.map((s, i) => <Chip key={i} label={s} />)}
+            </HorizontalItem>
           </SectionCard>
 
           {/* بطاقة الملاحظات */}
