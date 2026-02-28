@@ -20,7 +20,6 @@ interface CustomerRequest {
   notes?: string;
 }
 
-// بيانات تجريبية
 const SAMPLE_REQUESTS: CustomerRequest[] = [
   {
     id: "1",
@@ -76,8 +75,11 @@ export default function RequestsScreen() {
   };
 
   const handleFABPress = () => {
-    // TODO: فتح شاشة إضافة طلب جديد
     console.log("إضافة طلب جديد");
+  };
+
+  const handleRequestPress = (requestId: string) => {
+    router.push(`/order-details?id=${requestId}`);
   };
 
   const filteredRequests = selectedStatus === "all"
@@ -86,46 +88,31 @@ export default function RequestsScreen() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "new":
-        return colors.primary;
-      case "in-progress":
-        return colors.warning;
-      case "completed":
-        return colors.success;
-      case "cancelled":
-        return colors.error;
-      default:
-        return colors.muted;
+      case "new": return colors.primary;
+      case "in-progress": return colors.warning;
+      case "completed": return colors.success;
+      case "cancelled": return colors.error;
+      default: return colors.muted;
     }
   };
 
   const getStatusLabel = (status: string) => {
     switch (status) {
-      case "new":
-        return "جديد";
-      case "in-progress":
-        return "قيد المعالجة";
-      case "completed":
-        return "مكتمل";
-      case "cancelled":
-        return "ملغى";
-      default:
-        return status;
+      case "new": return "جديد";
+      case "in-progress": return "قيد المعالجة";
+      case "completed": return "مكتمل";
+      case "cancelled": return "ملغى";
+      default: return status;
     }
   };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case "new":
-        return "fiber-new";
-      case "in-progress":
-        return "schedule";
-      case "completed":
-        return "check-circle";
-      case "cancelled":
-        return "cancel";
-      default:
-        return "help";
+      case "new": return "fiber-new";
+      case "in-progress": return "schedule";
+      case "completed": return "check-circle";
+      case "cancelled": return "cancel";
+      default: return "help";
     }
   };
 
@@ -135,30 +122,21 @@ export default function RequestsScreen() {
 
       <ScreenContainer className="flex-1 p-0">
         <ScrollView className="flex-1">
-          {/* فلاتر الحالة */}
           <View className="px-4 py-4 gap-3">
             <Text className="text-lg font-bold text-foreground" style={{ fontFamily: "Cairo" }}>
               تصفية حسب الحالة
             </Text>
             <View className="flex-row gap-2 flex-wrap">
-              {[
-                { key: "all", label: "الكل" },
-                { key: "new", label: "جديد" },
-                { key: "in-progress", label: "قيد المعالجة" },
-                { key: "completed", label: "مكتمل" },
-              ].map((filter) => (
+              {["all", "new", "in-progress", "completed"].map((status) => (
                 <Pressable
-                  key={filter.key}
-                  onPress={() => setSelectedStatus(filter.key as any)}
+                  key={status}
+                  onPress={() => setSelectedStatus(status as any)}
                   style={({ pressed }) => [
                     {
                       paddingHorizontal: 12,
                       paddingVertical: 8,
                       borderRadius: 20,
-                      backgroundColor:
-                        selectedStatus === filter.key
-                          ? colors.primary
-                          : colors.surface,
+                      backgroundColor: selectedStatus === status ? colors.primary : colors.surface,
                       opacity: pressed ? 0.8 : 1,
                     },
                   ]}
@@ -166,21 +144,17 @@ export default function RequestsScreen() {
                   <Text
                     className="font-semibold"
                     style={{
-                      color:
-                        selectedStatus === filter.key
-                          ? "#FFFFFF"
-                          : colors.foreground,
+                      color: selectedStatus === status ? "#FFFFFF" : colors.foreground,
                       fontFamily: "Cairo",
                     }}
                   >
-                    {filter.label}
+                    {status === "all" ? "الكل" : getStatusLabel(status)}
                   </Text>
                 </Pressable>
               ))}
             </View>
           </View>
 
-          {/* قائمة الطلبات */}
           <View className="px-4 pb-4">
             <Text className="text-lg font-bold text-foreground mb-3" style={{ fontFamily: "Cairo" }}>
               الطلبات ({filteredRequests.length})
@@ -197,6 +171,7 @@ export default function RequestsScreen() {
               filteredRequests.map((request) => (
                 <Pressable
                   key={request.id}
+                  onPress={() => handleRequestPress(request.id)}
                   style={({ pressed }) => [
                     {
                       marginBottom: 12,
@@ -211,13 +186,9 @@ export default function RequestsScreen() {
                       borderLeftWidth: 4,
                     }}
                   >
-                    {/* رأس البطاقة - اسم العميل والحالة */}
                     <View className="flex-row justify-between items-start mb-3">
                       <View className="flex-1">
-                        <Text
-                          className="text-lg font-bold text-foreground"
-                          style={{ fontFamily: "Cairo" }}
-                        >
+                        <Text className="text-lg font-bold text-foreground" style={{ fontFamily: "Cairo" }}>
                           {request.customerName}
                         </Text>
                         <View className="flex-row items-center gap-1 mt-1">
@@ -231,32 +202,19 @@ export default function RequestsScreen() {
                         className="flex-row items-center gap-1 px-3 py-2 rounded-full"
                         style={{ backgroundColor: getStatusColor(request.status) + "20" }}
                       >
-                        <MaterialIcons
-                          name={getStatusIcon(request.status)}
-                          size={16}
-                          color={getStatusColor(request.status)}
-                        />
+                        <MaterialIcons name={getStatusIcon(request.status)} size={16} color={getStatusColor(request.status)} />
                         <Text
                           className="text-xs font-semibold"
-                          style={{
-                            color: getStatusColor(request.status),
-                            fontFamily: "Cairo",
-                          }}
+                          style={{ color: getStatusColor(request.status), fontFamily: "Cairo" }}
                         >
                           {getStatusLabel(request.status)}
                         </Text>
                       </View>
                     </View>
 
-                    {/* السيارة المطلوبة */}
                     <View className="bg-background rounded p-3 mb-3">
-                      <Text className="text-sm text-muted mb-1" style={{ fontFamily: "Cairo" }}>
-                        السيارة المطلوبة
-                      </Text>
-                      <Text
-                        className="text-base font-semibold text-foreground"
-                        style={{ fontFamily: "Cairo" }}
-                      >
+                      <Text className="text-sm text-muted mb-1" style={{ fontFamily: "Cairo" }}>السيارة المطلوبة</Text>
+                      <Text className="text-base font-semibold text-foreground" style={{ fontFamily: "Cairo" }}>
                         {request.requestedBrand} {request.requestedModel}
                       </Text>
                       <Text className="text-sm text-primary mt-1" style={{ fontFamily: "Cairo" }}>
@@ -264,21 +222,15 @@ export default function RequestsScreen() {
                       </Text>
                     </View>
 
-                    {/* معلومات إضافية */}
                     <View className="flex-row justify-between items-center">
                       <View className="flex-row items-center gap-1">
                         <MaterialIcons name="calendar-today" size={14} color={colors.muted} />
-                        <Text className="text-xs text-muted" style={{ fontFamily: "Cairo" }}>
-                          {request.createdDate}
-                        </Text>
+                        <Text className="text-xs text-muted" style={{ fontFamily: "Cairo" }}>{request.createdDate}</Text>
                       </View>
-
                       {request.notes && (
                         <View className="flex-row items-center gap-1">
                           <MaterialIcons name="notes" size={14} color={colors.muted} />
-                          <Text className="text-xs text-muted" style={{ fontFamily: "Cairo" }}>
-                            ملاحظات
-                          </Text>
+                          <Text className="text-xs text-muted" style={{ fontFamily: "Cairo" }}>ملاحظات</Text>
                         </View>
                       )}
                     </View>
