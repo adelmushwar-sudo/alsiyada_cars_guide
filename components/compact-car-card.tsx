@@ -190,7 +190,6 @@ export function CompactCarCard({
                   height: IMAGE_HEIGHT,
                   justifyContent: "center",
                   alignItems: "center",
-                  backgroundColor: colors.background,
                 }}
               >
                 <MaterialIcons
@@ -225,7 +224,6 @@ export function CompactCarCard({
             <View
               className="absolute bottom-0 left-0 right-0 px-2 py-2"
               style={{
-                backgroundColor: "rgba(0, 0, 0, 0.3)",
                 backdropFilter: "blur(4px)",
               }}
             >
@@ -277,15 +275,17 @@ export function CompactCarCard({
         <View className="px-3 py-3">
           {/* الصف الأول - العنوان والبيانات الأساسية */}
           <View className="mb-2">
-            <Text
+            
+
+            {/* الفئة والسنة والعداد في صف واحد */}
+            <View className="flex-row flex-wrap gap-1.5">
+              <Text
               className="text-lg font-bold text-foreground mb-2"
               style={{ fontFamily: "Cairo" }}
             >
               {brand} {model}
             </Text>
-
-            {/* الفئة والسنة والعداد في صف واحد */}
-            <View className="flex-row flex-wrap gap-1.5">
+              
               {/* سنة الصنع */}
               <View
                 className="flex-row items-center gap-1 px-2.5 py-1.5 rounded-lg"
