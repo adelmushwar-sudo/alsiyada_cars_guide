@@ -10,288 +10,123 @@ import {
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { IconSymbol } from "@/components/ui/icon-symbol";
-import Svg, { Path, Defs, Filter, FeGaussianBlur } from "react-native-svg";
+import Svg, { Path } from "react-native-svg";
 import * as Haptics from "expo-haptics";
 import { useColors } from "@/hooks/use-colors";
 
-const SCREEN_WIDTH = Dimensions.get("window").width;
+const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const TAB_WIDTH = SCREEN_WIDTH / 3;
-const BAR_HEIGHT = 75;
-const CURVE_DEPTH = 40;
-const CURVE_WIDTH = TAB_WIDTH + 20;
-
-interface ConcaveBottomBarProps extends BottomTabBarProps {
-  state: any;
-  descriptors: any;
-  navigation: any;
-}
+const BAR_HEIGHT = 65;
+const CIRCLE_SIZE = 60; // حجم الدائرة البارزة
 
 export function ConcaveBottomBar({
   state,
   descriptors,
   navigation,
-}: ConcaveBottomBarProps) {
+}: BottomTabBarProps) {
   const colors = useColors();
-  const curvePosition = useRef(new Animated.Value(0)).current;
-  const scaleAnimations = useRef(
-    state.routes.map(() => new Animated.Value(1))
-  ).current;
-  const bounceAnimations = useRef(
-    state.routes.map(() => new Animated.Value(0))
-  ).current;
-  const opacityAnimations = useRef(
-    state.routes.map(() => new Animated.Value(0.6))
-  ).current;
+  const animatedValue = useRef(new Animated.Value(state.index)).current;
 
-  // تحديث موضع المنحنى عند تغيير التبويب النشط
   useEffect(() => {
-    const activeIndex = state.index;
-
-    // حركة سلسة وسريعة للمنحنى
-    Animated.timing(curvePosition, {
-      toValue: activeIndex * TAB_WIDTH - 10,
-      duration: 350,
+    Animated.spring(animatedValue, {
+      toValue: state.index,
       useNativeDriver: false,
+      friction: 8,
+      tension: 50,
     }).start();
-
-    // تطبيق تأثير القفزة (Bounce) على الأيقونة النشطة
-    Animated.sequence([
-      Animated.timing(bounceAnimations[activeIndex], {
-        toValue: -12,
-        duration: 180,
-        useNativeDriver: false,
-      }),
-      Animated.spring(bounceAnimations[activeIndex], {
-        toValue: 0,
-        tension: 60,
-        friction: 6,
-        useNativeDriver: false,
-      }),
-    ]).start();
-
-    // تطبيق تأثير التكبير على الأيقونة النشطة
-    Animated.timing(scaleAnimations[activeIndex], {
-      toValue: 1.25,
-      duration: 250,
-      useNativeDriver: false,
-    }).start();
-
-    // تطبيق تأثير الشفافية على الأيقونة النشطة
-    Animated.timing(opacityAnimations[activeIndex], {
-      toValue: 1,
-      duration: 250,
-      useNativeDriver: false,
-    }).start();
-
-    // إعادة تعيين الأيقونات غير النشطة
-    state.routes.forEach((_, index: number) => {
-      if (index !== activeIndex) {
-        Animated.timing(scaleAnimations[index], {
-          toValue: 1,
-          duration: 250,
-          useNativeDriver: false,
-        }).start();
-
-        Animated.timing(opacityAnimations[index], {
-          toValue: 0.6,
-          duration: 250,
-          useNativeDriver: false,
-        }).start();
-      }
-    });
   }, [state.index]);
 
-  const handlePress = (index: number) => {
-    const route = state.routes[index];
-    const isFocused = state.index === index;
+  // رسم المسار الانسيابي للشريط مع التجويف الدائري
+  const centerX = TAB_WIDTH / 2;
+  const d = `
+    M 0 0
+    L ${animatedValue.interpolate({
+      inputRange: [0, 1, 2],
+      outputRange: [centerX - 45, TAB_WIDTH + centerX - 45, 2 * TAB_WIDTH + centerX - 45]
+    })} 0
+    C ${animatedValue.interpolate({
+      inputRange: [0, 1, 2],
+      outputRange: [centerX - 35, TAB_WIDTH + centerX - 35, 2 * TAB_WIDTH + centerX - 35]
+    })} 0, ${animatedValue.interpolate({
+      inputRange: [0, 1, 2],
+      outputRange: [centerX - 30, TAB_WIDTH + centerX - 30, 2 * TAB_WIDTH + centerX - 30]
+    })} 35, ${animatedValue.interpolate({
+      inputRange: [0, 1, 2],
+      outputRange: [centerX, TAB_WIDTH + centerX, 2 * TAB_WIDTH + centerX]
+    })} 35
+    C ${animatedValue.interpolate({
+      inputRange: [0, 1, 2],
+      outputRange: [centerX + 30, TAB_WIDTH + centerX + 30, 2 * TAB_WIDTH + centerX + 30]
+    })} 35, ${animatedValue.interpolate({
+      inputRange: [0, 1, 2],
+      outputRange: [centerX + 35, TAB_WIDTH + centerX + 35, 2 * TAB_WIDTH + centerX + 35]
+    })} 0, ${animatedValue.interpolate({
+      inputRange: [0, 1, 2],
+      outputRange: [centerX + 45, TAB_WIDTH + centerX + 45, 2 * TAB_WIDTH + centerX + 45]
+    })} 0
+    L ${SCREEN_WIDTH} 0
+    L ${SCREEN_WIDTH} ${BAR_HEIGHT}
+    L 0 ${BAR_HEIGHT}
+    Z
+  `;
 
-    if (!isFocused) {
-      // تطبيق رد فعل لمسي عند التنقل
-      if (Platform.OS === "ios") {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-      }
-
-      navigation.navigate(route.name);
-    }
-  };
-
-  // رسم المنحنى الغائر باستخدام SVG مع Bezier Curves محسنة
-  const CurveShape = ({ position }: { position: any }) => {
-    const generateCurvePath = (x: number) => {
-      const startX = x - 10;
-      const endX = x + TAB_WIDTH + 10;
-      const midX = (startX + endX) / 2;
-      const topY = 0;
-      const bottomY = CURVE_DEPTH;
-
-      // منحنى غائر (Concave) محسن باستخدام Bezier Curves
-      // يتم استخدام نقاط تحكم متعددة لإنشاء منحنى انسيابي جداً
-      return `
-        M ${startX} ${topY}
-        C ${startX + 8} ${topY}, ${midX - TAB_WIDTH * 0.25} ${bottomY - 5}, ${midX - TAB_WIDTH * 0.15} ${bottomY + 3}
-        C ${midX - 5} ${bottomY + 5}, ${midX + 5} ${bottomY + 5}, ${midX + TAB_WIDTH * 0.15} ${bottomY + 3}
-        C ${midX + TAB_WIDTH * 0.25} ${bottomY - 5}, ${endX - 8} ${topY}, ${endX} ${topY}
-      `;
-    };
-
-    return (
-      <Animated.View
-        style={[
-          styles.curveContainer,
-          {
-            transform: [{ translateX: position }],
-          },
-        ]}
-      >
-        <Svg
-          width={CURVE_WIDTH}
-          height={CURVE_DEPTH + 15}
-          viewBox={`0 0 ${CURVE_WIDTH} ${CURVE_DEPTH + 15}`}
-        >
-          <Defs>
-            <Filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
-              <FeGaussianBlur in="SourceGraphic" stdDeviation="3" />
-            </Filter>
-          </Defs>
-          <Path
-            d={generateCurvePath(10)}
-            fill={colors.primary}
-            stroke="none"
-            filter="url(#shadow)"
-          />
-        </Svg>
-      </Animated.View>
-    );
-  };
+  const AnimatedPath = Animated.createAnimatedComponent(Path);
 
   return (
-    <View
-      style={[
-        styles.container,
-        {
-          backgroundColor: colors.background,
-          borderTopColor: colors.border,
-        },
-      ]}
-    >
-      {/* خط أفقي أعلى الشريط */}
-      <View
-        style={[
-          styles.topLine,
-          {
-            backgroundColor: colors.primary,
-          },
-        ]}
-      />
+    <View style={styles.container}>
+      <Svg width={SCREEN_WIDTH} height={BAR_HEIGHT} style={styles.svg}>
+        <AnimatedPath d={d} fill={colors.background} />
+      </Svg>
 
-      {/* المنحنى الغائر */}
-      <CurveShape position={curvePosition} />
-
-      {/* خلفية شريط التنقل */}
-      <View
-        style={[
-          styles.barBackground,
-          {
-            backgroundColor: colors.background,
-            borderTopColor: colors.border,
-          },
-        ]}
-      />
-
-      {/* التبويبات */}
       <View style={styles.tabsContainer}>
-        {state.routes.map((route: any, index: number) => {
-          const { options } = descriptors[route.key];
+        {state.routes.map((route, index) => {
           const isFocused = state.index === index;
+          
+          const handlePress = () => {
+            if (!isFocused) {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              navigation.navigate(route.name);
+            }
+          };
 
-          const iconColor = isFocused ? "#FFFFFF" : colors.muted;
-          const labelColor = isFocused ? colors.primary : colors.muted;
-
-          // اختيار الأيقونة بناءً على اسم المسار
-          const getIcon = () => {
+          const getIcon = (focused: boolean) => {
+            const color = focused ? "#FFFFFF" : colors.muted;
             switch (route.name) {
-              case "our-inventory":
-                return (
-                  <MaterialIcons
-                    name="inventory-2"
-                    size={24}
-                    color={iconColor}
-                  />
-                );
-              case "index":
-                return (
-                  <IconSymbol
-                    size={26}
-                    name="house.fill"
-                    color={iconColor}
-                  />
-                );
-              case "requests":
-                return (
-                  <MaterialIcons
-                    name="list-alt"
-                    size={24}
-                    color={iconColor}
-                  />
-                );
-              default:
-                return null;
+              case "index": return <IconSymbol size={28} name="house.fill" color={color} />;
+              case "our-inventory": return <MaterialIcons name="inventory-2" size={26} color={color} />;
+              case "requests": return <MaterialIcons name="list-alt" size={26} color={color} />;
+              default: return null;
+            }
+          };
+
+          const getLabel = () => {
+            switch (route.name) {
+              case "index": return "الرئيسية";
+              case "our-inventory": return "لدينا";
+              case "requests": return "مطلوب";
+              default: return "";
             }
           };
 
           return (
-            <Pressable
-              key={route.key}
-              onPress={() => handlePress(index)}
-              style={[
-                styles.tab,
-                {
-                  width: TAB_WIDTH,
-                },
-              ]}
-            >
-              <Animated.View
-                style={[
-                  styles.iconContainer,
+            <Pressable key={route.key} onPress={handlePress} style={styles.tab}>
+              {isFocused ? (
+                <Animated.View style={[
+                  styles.activeIconContainer,
                   {
-                    transform: [
-                      { scale: scaleAnimations[index] },
-                      { translateY: bounceAnimations[index] },
-                    ],
-                    opacity: opacityAnimations[index],
-                  },
-                ]}
-              >
-                {isFocused && (
-                  <View
-                    style={[
-                      styles.iconBackground,
-                      {
-                        backgroundColor: colors.primary,
-                        shadowColor: colors.primary,
-                        shadowOpacity: 0.3,
-                        shadowRadius: 8,
-                        shadowOffset: { width: 0, height: 4 },
-                        elevation: 8,
-                      },
-                    ]}
-                  />
-                )}
-                {getIcon()}
-              </Animated.View>
-
-              {!isFocused && (
-                <Animated.Text
-                  style={[
-                    styles.label,
-                    {
-                      color: labelColor,
-                      opacity: opacityAnimations[index],
-                    },
-                  ]}
-                >
-                  {options.title || route.name}
-                </Animated.Text>
+                    backgroundColor: colors.primary,
+                    transform: [{ translateY: -28 }]
+                  }
+                ]}>
+                  {getIcon(true)}
+                </Animated.View>
+              ) : (
+                <View style={styles.inactiveContainer}>
+                  {getIcon(false)}
+                  <Animated.Text style={[styles.label, { color: colors.muted }]}>
+                    {getLabel()}
+                  </Animated.Text>
+                </View>
               )}
             </Pressable>
           );
@@ -303,63 +138,51 @@ export function ConcaveBottomBar({
 
 const styles = StyleSheet.create({
   container: {
-    position: "relative",
-    paddingBottom: Platform.OS === "web" ? 8 : 0,
-    borderTopWidth: 0,
-  },
-  topLine: {
     position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    height: 4,
-    zIndex: 20,
-  },
-  barBackground: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
     bottom: 0,
-    borderTopWidth: 0,
+    width: SCREEN_WIDTH,
+    height: BAR_HEIGHT,
+    backgroundColor: "transparent",
   },
-  curveContainer: {
+  svg: {
     position: "absolute",
-    top: -CURVE_DEPTH,
-    width: CURVE_WIDTH,
-    height: CURVE_DEPTH + 15,
-    zIndex: 15,
+    top: 0,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 5,
   },
   tabsContainer: {
     flexDirection: "row",
-    justifyContent: "space-around",
-    alignItems: "center",
     height: BAR_HEIGHT,
-    zIndex: 5,
-    paddingTop: 12,
+    alignItems: "center",
   },
   tab: {
+    flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: 8,
   },
-  iconContainer: {
+  activeIconContainer: {
+    width: CIRCLE_SIZE,
+    height: CIRCLE_SIZE,
+    borderRadius: CIRCLE_SIZE / 2,
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    elevation: 5,
+    borderWidth: 4,
+    borderColor: "#121212", // عدل هذا ليتناسب مع خلفية التطبيق الداكنة
+  },
+  inactiveContainer: {
     alignItems: "center",
     justifyContent: "center",
-    position: "relative",
-  },
-  iconBackground: {
-    position: "absolute",
-    width: 52,
-    height: 52,
-    borderRadius: 26,
-    zIndex: -1,
+    paddingTop: 10,
   },
   label: {
     fontSize: 10,
-    fontWeight: "600",
     fontFamily: "Cairo",
     marginTop: 4,
   },
 });
-      
