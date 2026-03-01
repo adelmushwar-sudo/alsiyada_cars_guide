@@ -4,6 +4,7 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
 import { HapticTab } from "@/components/haptic-tab";
 import { IconSymbol } from "@/components/ui/icon-symbol";
+import { ConcaveBottomBar } from "@/components/concave-bottom-bar";
 import { Platform } from "react-native";
 import { useColors } from "@/hooks/use-colors";
 
@@ -18,14 +19,10 @@ export default function TabLayout() {
       screenOptions={{
         tabBarActiveTintColor: colors.primary,
         headerShown: false,
-        tabBarButton: HapticTab,
         tabBarStyle: {
-          paddingTop: 8,
-          paddingBottom: bottomPadding,
-          height: tabBarHeight,
           backgroundColor: colors.background,
           borderTopColor: colors.border,
-          borderTopWidth: 0.5,
+          borderTopWidth: 0,
         },
         tabBarLabelStyle: {
           fontSize: 12,
@@ -33,6 +30,7 @@ export default function TabLayout() {
           marginTop: -8,
         },
       }}
+      tabBar={(props) => <ConcaveBottomBar {...props} />}
     >
       {/* التبويب الأيمن - لدينا */}
       <Tabs.Screen
