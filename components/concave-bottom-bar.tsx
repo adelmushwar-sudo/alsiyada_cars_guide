@@ -173,7 +173,6 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 5,
     borderWidth: 4,
-    borderColor: colors.background, // عدل هذا ليتناسب مع خلفية التطبيق الداكنة
   },
   inactiveContainer: {
     alignItems: "center",
