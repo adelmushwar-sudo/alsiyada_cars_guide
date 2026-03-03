@@ -72,13 +72,17 @@ export function ConcaveBottomBar({
 
   const AnimatedPath = Animated.createAnimatedComponent(Path);
 
+  // حساب الظلال الديناميكية بناءً على السمة
+  const shadowColor = colors.text === "#FFFFFF" ? "rgba(0, 0, 0, 0.15)" : "rgba(0, 0, 0, 0.08)";
+  const shadowOpacity = colors.text === "#FFFFFF" ? 0.15 : 0.08;
+
   return (
-    <View style={styles.container}>
-      <Svg width={SCREEN_WIDTH} height={BAR_HEIGHT} style={styles.svg}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <Svg width={SCREEN_WIDTH} height={BAR_HEIGHT} style={[styles.svg, { shadowColor }]}>
         <AnimatedPath d={d} fill={colors.background} />
       </Svg>
 
-      <View style={styles.tabsContainer}>
+      <View style={[styles.tabsContainer, { backgroundColor: colors.background }]}>
         {state.routes.map((route, index) => {
           const isFocused = state.index === index;
           
@@ -115,7 +119,10 @@ export function ConcaveBottomBar({
                   styles.activeIconContainer,
                   {
                     backgroundColor: colors.primary,
-                    transform: [{ translateY: -28 }]
+                    borderColor: colors.background,
+                    transform: [{ translateY: -28 }],
+                    shadowColor: colors.text === "#FFFFFF" ? "rgba(0, 0, 0, 0.3)" : "rgba(0, 0, 0, 0.15)",
+                    shadowOpacity: colors.text === "#FFFFFF" ? 0.3 : 0.15,
                   }
                 ]}>
                   {getIcon(true)}
@@ -142,13 +149,10 @@ const styles = StyleSheet.create({
     bottom: 0,
     width: SCREEN_WIDTH,
     height: BAR_HEIGHT,
-    backgroundColor: "transparent",
   },
   svg: {
     position: "absolute",
     top: 0,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
     shadowRadius: 10,
     elevation: 5,
   },
@@ -156,6 +160,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     height: BAR_HEIGHT,
     alignItems: "center",
+    position: "absolute",
+    width: SCREEN_WIDTH,
+    bottom: 0,
   },
   tab: {
     flex: 1,
@@ -168,11 +175,10 @@ const styles = StyleSheet.create({
     borderRadius: CIRCLE_SIZE / 2,
     justifyContent: "center",
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOpacity: 0.2,
     shadowRadius: 5,
     elevation: 5,
     borderWidth: 4,
+    shadowOffset: { width: 0, height: 2 },
   },
   inactiveContainer: {
     alignItems: "center",
