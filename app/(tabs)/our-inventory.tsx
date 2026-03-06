@@ -107,7 +107,8 @@ export default function OurInventoryScreen() {
     : SAMPLE_CARS.filter(car => car.location === selectedLocation);
 
   return (
-    <View className="flex-1 bg-background">
+   // <View className="flex-1 bg-background">
+    <View className="flex-1" style={{ flex: 1, backgroundColor: colors.background }}>
       <AppHeader title="دليل السيارات" onMenuPress={handleMenuPress} />
 
       <ScreenContainer className="flex-1 p-0">
