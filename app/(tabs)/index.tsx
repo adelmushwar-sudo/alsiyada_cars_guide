@@ -55,7 +55,8 @@ export default function HomeScreen() {
   ];
 
   return (
-    <View className="flex-1 bg-background">
+ //   <View className="flex-1 bg-background">
+    <View className="flex-1" style={{ flex: 1, backgroundColor: colors.background }}>
       <AppHeader title="دليل السيارات" onMenuPress={handleMenuPress} />
 
       <ScreenContainer className="flex-1 p-0">
