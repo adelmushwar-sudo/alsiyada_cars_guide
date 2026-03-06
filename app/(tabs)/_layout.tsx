@@ -6,7 +6,7 @@ import { HapticTab } from "@/components/haptic-tab";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { ConcaveBottomBar } from "@/components/concave-bottom-bar";
 import { useColors } from "@/hooks/use-colors";
-import { FloatingActionButton } from "@/components/FloatingActionButton";
+import { FloatingActionButton } from "@/components/floating-action-button";
 
 export default function TabLayout() {
   const colors = useColors();
