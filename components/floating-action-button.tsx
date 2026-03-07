@@ -61,7 +61,7 @@ export function FloatingActionButton() {
   const labelBackgroundColor = colors.text === '#000' ? 'rgba(255, 255, 255, 0.85)' : 'rgba(0, 0, 0, 0.7)';
 
   return (
-    <View style={[styles.container, { bottom: 80 + insets.bottom }]}>
+    <View style={[styles.container, { bottom: 80 + insets.bottom, right: 16 }]}>
       {expanded && (
         <Animated.View
           style={[
@@ -87,9 +87,6 @@ export function FloatingActionButton() {
             },
           ]}
         >
-          <View style={[styles.labelContainer, { backgroundColor: labelBackgroundColor }]}>
-            <Text style={[styles.label, { color: labelTextColor }]}>إضافة طلب جديد</Text>
-          </View>
           <Pressable
             style={[
               styles.secondaryButton,
@@ -106,6 +103,11 @@ export function FloatingActionButton() {
           >
             <MaterialIcons name="note-add" size={24} color="white" />
           </Pressable>
+          <View style={[styles.labelContainer, { backgroundColor: labelBackgroundColor }]}>
+            <Text style={[styles.label, { color: labelTextColor }]} numberOfLines={1}>
+              إضافة طلب
+            </Text>
+          </View>
         </Animated.View>
 
         {/* خيار إضافة سيارة جديدة */}
@@ -118,9 +120,6 @@ export function FloatingActionButton() {
             },
           ]}
         >
-          <View style={[styles.labelContainer, { backgroundColor: labelBackgroundColor }]}>
-            <Text style={[styles.label, { color: labelTextColor }]}>إضافة سيارة جديدة</Text>
-          </View>
           <Pressable
             style={[
               styles.secondaryButton,
@@ -137,8 +136,101 @@ export function FloatingActionButton() {
           >
             <MaterialIcons name="directions-car" size={24} color="white" />
           </Pressable>
+          <View style={[styles.labelContainer, { backgroundColor: labelBackgroundColor }]}>
+            <Text style={[styles.label, { color: labelTextColor }]} numberOfLines={1}>
+              إضافة سيارة
+            </Text>
+          </View>
         </Animated.View>
 
+        {/* الزر الأساسي */}
+        <Pressable
+          onPress={toggleMenu}
+          style={({ pressed }) => [
+            {
+              transform: [{ scale: pressed ? 0.9 : 1 }],
+            },
+          ]}
+        >
+          <View
+            style={[
+              styles.mainButton,
+              {
+                backgroundColor: colors.primary,
+                shadowColor: colors.primary,
+              },
+            ]}
+          >
+            <Animated.View style={{ transform: [{ rotate: rotation }] }}>
+              <MaterialIcons name="add" size={32} color="white" />
+            </Animated.View>
+          </View>
+        </Pressable>
+      </View>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    position: 'absolute',
+    alignItems: 'center',
+    zIndex: 1000,
+  },
+  overlay: {
+    position: 'absolute',
+    top: -1000,
+    left: -1000,
+    right: -1000,
+    bottom: -1000,
+    zIndex: -1,
+  },
+  buttonContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  mainButton: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 8,
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 5 },
+  },
+  secondaryButtonContainer: {
+    position: 'absolute',
+    flexDirection: 'row-reverse',
+    alignItems: 'center',
+    right: 0,
+  },
+  secondaryButton: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    shadowOffset: { width: 0, height: 2 },
+  },
+  labelContainer: {
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 6,
+    marginRight: 8,
+    maxWidth: 80,
+  },
+  label: {
+    fontSize: 12,
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+});
         {/* الزر الأساسي */}
         <Pressable
           onPress={toggleMenu}
