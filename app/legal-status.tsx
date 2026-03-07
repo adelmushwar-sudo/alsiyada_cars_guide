@@ -26,27 +26,26 @@ export default function LegalStatusScreen() {
 
   // State for customs status
   const [customsStatus, setCustomsStatus] = useState<LegalItem[]>([
-    { id: "1", name: "مستخلصة من الجمارك", order: 1, selectedIds: ["1", "2", "3"] },
-    { id: "2", name: "قيد الإفراج الجمركي", order: 2, selectedIds: ["4"] },
-    { id: "3", name: "معفاة من الرسوم", order: 3, selectedIds: ["2"] },
+    { id: "1", name: "مستخلصة من الجمارك", order: 1 },
+    { id: "2", name: "قيد الإفراج الجمركي", order: 2 },
+    { id: "3", name: "معفاة من الرسوم", order: 3 },
   ]);
 
   // Handler functions for customs status
-  const handleAddCustomsStatus = (name: string, _?: string, selectedIds?: string[]) => {
+  const handleAddCustomsStatus = (name: string) => {
     const newItem: LegalItem = {
       id: String(Date.now()),
       name,
       order: customsStatus.length + 1,
-      selectedIds,
     };
     setCustomsStatus([...customsStatus, newItem]);
     showToast("تمت إضافة حالة الجمارك بنجاح", "success");
   };
 
-  const handleUpdateCustomsStatus = (id: string, name: string, _?: string, selectedIds?: string[]) => {
+  const handleUpdateCustomsStatus = (id: string, name: string) => {
     setCustomsStatus(
       customsStatus.map((item) =>
-        item.id === id ? { ...item, name, selectedIds } : item
+        item.id === id ? { ...item, name } : item
       )
     );
     showToast("تم تحديث حالة الجمارك بنجاح", "success");
@@ -86,9 +85,9 @@ export default function LegalStatusScreen() {
             onUpdate={handleUpdateCustomsStatus}
             onDelete={handleDeleteCustomsStatus}
             onReorder={handleReorderCustomsStatus}
-            multiSelect={true}
-            selectableItems={mockModels}
-            selectLabel="اختر الموديلات"
+            multiSelect={false}
+            selectableItems={[]}
+            selectLabel=""
           />
         </View>
       </ScrollView>

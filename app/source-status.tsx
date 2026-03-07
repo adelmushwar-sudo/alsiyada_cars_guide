@@ -123,9 +123,9 @@ export default function SourceStatusScreen() {
             onUpdate={handleUpdateSourceClassification}
             onDelete={handleDeleteSourceClassification}
             onReorder={handleReorderSourceClassification}
-            multiSelect={true}
-            selectableItems={mockModels}
-            selectLabel="اختر الموديلات"
+            multiSelect={false}
+            selectableItems={[]}
+            selectLabel=""
           />
         </View>
 
@@ -139,9 +139,9 @@ export default function SourceStatusScreen() {
             onUpdate={handleUpdateStatusTracking}
             onDelete={handleDeleteStatusTracking}
             onReorder={handleReorderStatusTracking}
-            multiSelect={true}
-            selectableItems={mockModels}
-            selectLabel="اختر الموديلات"
+            multiSelect={false}
+            selectableItems={[]}
+            selectLabel=""
           />
         </View>
       </ScrollView>

@@ -20,6 +20,8 @@ const SECTION_CONFIG = {
     showColorPicker: false,
     requiresParent: true,
     parentLabel: "اختر الماركة",
+    singleSelect: true,
+    selectLabel: "اختر الماركة",
   },
   trims: {
     title: "فئات السيارات",
@@ -244,7 +246,7 @@ export default function ManagementSection() {
         onDelete={handleDelete}
         onReorder={handleReorder}
         showColorPicker={config.showColorPicker || false}
-        multiSelect={(config as any).multiSelect || false}
+        multiSelect={sectionId === "models" ? false : (config as any).multiSelect || false}
         selectableItems={sectionId === "models" ? brands : models}
         selectLabel={(config as any).selectLabel || "اختر العناصر"}
       />
