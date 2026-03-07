@@ -6,10 +6,13 @@ import {
   Animated,
   Text,
   Platform,
+  Dimensions,
 } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useColors } from '@/hooks/use-colors';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+const { width: screenWidth } = Dimensions.get('window');
 
 export function FloatingActionButton() {
   const [expanded, setExpanded] = useState(false);
@@ -50,8 +53,12 @@ export function FloatingActionButton() {
 
   const overlayOpacity = animation.interpolate({
     inputRange: [0, 1],
-    outputRange: [0, 1],
+    outputRange: [0, 0.3],
   });
+
+  // تحديد لون النص بناءً على السمة
+  const labelTextColor = colors.text === '#000' ? '#000' : '#FFF';
+  const labelBackgroundColor = colors.text === '#000' ? 'rgba(255, 255, 255, 0.85)' : 'rgba(0, 0, 0, 0.7)';
 
   return (
     <View style={[styles.container, { bottom: 80 + insets.bottom }]}>
@@ -61,7 +68,7 @@ export function FloatingActionButton() {
             styles.overlay,
             {
               opacity: overlayOpacity,
-              backgroundColor: 'rgba(0,0,0,0.4)',
+              backgroundColor: colors.background,
             },
           ]}
         >
@@ -80,17 +87,24 @@ export function FloatingActionButton() {
             },
           ]}
         >
-          <View style={styles.labelContainer}>
-            <Text style={[styles.label, { color: colors.text }]}>إضافة طلب جديد</Text>
+          <View style={[styles.labelContainer, { backgroundColor: labelBackgroundColor }]}>
+            <Text style={[styles.label, { color: labelTextColor }]}>إضافة طلب جديد</Text>
           </View>
           <Pressable
-            style={[styles.secondaryButton, { backgroundColor: colors.background }]}
+            style={[
+              styles.secondaryButton,
+              {
+                backgroundColor: colors.primary,
+                borderWidth: 2,
+                borderColor: colors.background,
+              },
+            ]}
             onPress={() => {
               console.log('إضافة طلب جديد');
               toggleMenu();
             }}
           >
-            <MaterialIcons name="note-add" size={24} color={colors.primary} />
+            <MaterialIcons name="note-add" size={24} color="white" />
           </Pressable>
         </Animated.View>
 
@@ -104,17 +118,24 @@ export function FloatingActionButton() {
             },
           ]}
         >
-          <View style={styles.labelContainer}>
-            <Text style={[styles.label, { color: colors.text }]}>إضافة سيارة جديدة</Text>
+          <View style={[styles.labelContainer, { backgroundColor: labelBackgroundColor }]}>
+            <Text style={[styles.label, { color: labelTextColor }]}>إضافة سيارة جديدة</Text>
           </View>
           <Pressable
-            style={[styles.secondaryButton, { backgroundColor: colors.background }]}
+            style={[
+              styles.secondaryButton,
+              {
+                backgroundColor: colors.primary,
+                borderWidth: 2,
+                borderColor: colors.background,
+              },
+            ]}
             onPress={() => {
               console.log('إضافة سيارة جديدة');
               toggleMenu();
             }}
           >
-            <MaterialIcons name="directions-car" size={24} color={colors.primary} />
+            <MaterialIcons name="directions-car" size={24} color="white" />
           </Pressable>
         </Animated.View>
 
@@ -196,14 +217,13 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   labelContainer: {
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 8,
     marginRight: 10,
   },
   label: {
-    fontSize: 14,
-    fontWeight: 'bold',
+    fontSize: 13,
+    fontWeight: '600',
   },
 });
