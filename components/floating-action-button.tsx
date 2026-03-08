@@ -14,7 +14,11 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const { width: screenWidth } = Dimensions.get('window');
 
-export function FloatingActionButton() {
+interface FloatingActionButtonProps {
+  onPress?: () => void;
+}
+
+export function FloatingActionButton({ onPress }: FloatingActionButtonProps = {}) {
   const [expanded, setExpanded] = useState(false);
   const animation = useRef(new Animated.Value(0)).current;
   const colors = useColors();
