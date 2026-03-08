@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   View,
   Animated,
@@ -26,6 +26,15 @@ export function ConcaveBottomBar({
 }: BottomTabBarProps) {
   const colors = useColors();
   const animatedValue = useRef(new Animated.Value(state.index)).current;
+  const [pathValues, setPathValues] = useState({
+    x1: TAB_WIDTH / 2 - 45,
+    x2: TAB_WIDTH / 2 - 35,
+    x3: TAB_WIDTH / 2 - 30,
+    x4: TAB_WIDTH / 2,
+    x5: TAB_WIDTH / 2 + 30,
+    x6: TAB_WIDTH / 2 + 35,
+    x7: TAB_WIDTH / 2 + 45,
+  });
 
   useEffect(() => {
     Animated.spring(animatedValue, {
@@ -36,41 +45,39 @@ export function ConcaveBottomBar({
     }).start();
   }, [state.index]);
 
+  // استخدام listener لتحديث قيم الـ path dynamically
+  useEffect(() => {
+    const listener = animatedValue.addListener(({ value }) => {
+      const centerX = TAB_WIDTH / 2;
+      
+      // حساب الإزاحة بناءً على القيمة المتحركة
+      const offset = value * TAB_WIDTH;
+      
+      setPathValues({
+        x1: centerX - 45 + offset,
+        x2: centerX - 35 + offset,
+        x3: centerX - 30 + offset,
+        x4: centerX + offset,
+        x5: centerX + 30 + offset,
+        x6: centerX + 35 + offset,
+        x7: centerX + 45 + offset,
+      });
+    });
+
+    return () => animatedValue.removeListener(listener);
+  }, [animatedValue]);
+
   // رسم المسار الانسيابي للشريط مع التجويف الدائري
-  const centerX = TAB_WIDTH / 2;
   const d = `
     M 0 0
-    L ${animatedValue.interpolate({
-      inputRange: [0, 1, 2],
-      outputRange: [centerX - 45, TAB_WIDTH + centerX - 45, 2 * TAB_WIDTH + centerX - 45]
-    })} 0
-    C ${animatedValue.interpolate({
-      inputRange: [0, 1, 2],
-      outputRange: [centerX - 35, TAB_WIDTH + centerX - 35, 2 * TAB_WIDTH + centerX - 35]
-    })} 0, ${animatedValue.interpolate({
-      inputRange: [0, 1, 2],
-      outputRange: [centerX - 30, TAB_WIDTH + centerX - 30, 2 * TAB_WIDTH + centerX - 30]
-    })} 35, ${animatedValue.interpolate({
-      inputRange: [0, 1, 2],
-      outputRange: [centerX, TAB_WIDTH + centerX, 2 * TAB_WIDTH + centerX]
-    })} 35
-    C ${animatedValue.interpolate({
-      inputRange: [0, 1, 2],
-      outputRange: [centerX + 30, TAB_WIDTH + centerX + 30, 2 * TAB_WIDTH + centerX + 30]
-    })} 35, ${animatedValue.interpolate({
-      inputRange: [0, 1, 2],
-      outputRange: [centerX + 35, TAB_WIDTH + centerX + 35, 2 * TAB_WIDTH + centerX + 35]
-    })} 0, ${animatedValue.interpolate({
-      inputRange: [0, 1, 2],
-      outputRange: [centerX + 45, TAB_WIDTH + centerX + 45, 2 * TAB_WIDTH + centerX + 45]
-    })} 0
+    L ${pathValues.x1} 0
+    C ${pathValues.x2} 0, ${pathValues.x3} 35, ${pathValues.x4} 35
+    C ${pathValues.x5} 35, ${pathValues.x6} 0, ${pathValues.x7} 0
     L ${SCREEN_WIDTH} 0
     L ${SCREEN_WIDTH} ${BAR_HEIGHT}
     L 0 ${BAR_HEIGHT}
     Z
   `;
-
-  const AnimatedPath = Animated.createAnimatedComponent(Path);
 
   // حساب الظلال الديناميكية بناءً على السمة
   const shadowColor = colors.text === "#FFFFFF" ? "rgba(0, 0, 0, 0.15)" : "rgba(0, 0, 0, 0.08)";
@@ -79,7 +86,7 @@ export function ConcaveBottomBar({
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <Svg width={SCREEN_WIDTH} height={BAR_HEIGHT} style={[styles.svg, { shadowColor }]}>
-        <AnimatedPath d={d} fill={colors.background} />
+        <Path d={d} fill={colors.background} />
       </Svg>
 
       <View style={[styles.tabsContainer, { backgroundColor: colors.background }]}>
