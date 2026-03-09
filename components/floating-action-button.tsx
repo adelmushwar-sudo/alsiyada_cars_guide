@@ -8,6 +8,7 @@ import {
   Platform,
   Dimensions,
 } from 'react-native';
+import { useRouter } from 'expo-router';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useColors } from '@/hooks/use-colors';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -23,6 +24,7 @@ export function FloatingActionButton({ onPress }: FloatingActionButtonProps = {}
   const animation = useRef(new Animated.Value(0)).current;
   const colors = useColors();
   const insets = useSafeAreaInsets();
+  const router = useRouter();
 
   const toggleMenu = () => {
     const toValue = expanded ? 0 : 1;
@@ -134,8 +136,8 @@ export function FloatingActionButton({ onPress }: FloatingActionButtonProps = {}
               },
             ]}
             onPress={() => {
-              console.log('إضافة سيارة جديدة');
               toggleMenu();
+              router.push('/add-car-improved');
             }}
           >
             <MaterialIcons name="directions-car" size={24} color="white" />
