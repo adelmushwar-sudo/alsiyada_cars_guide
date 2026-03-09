@@ -90,10 +90,38 @@ export default function RootLayout() {
           <Stack screenOptions={{ headerShown: false }}>
             <Stack.Screen name="(tabs)" />
             <Stack.Screen name="oauth/callback" />
+            <Stack.Screen name="add-car-enhanced" />
+            <Stack.Screen name="add-car-improved" />
           </Stack>
           <StatusBar style="auto" />
           </QueryClientProvider>
         </trpc.Provider>
+      </ToastProvider>
+    </GestureHandlerRootView>
+  );
+
+  const shouldOverrideSafeArea = Platform.OS === "web";
+
+  if (shouldOverrideSafeArea) {
+    return (
+      <ThemeProvider>
+        <SafeAreaProvider initialMetrics={providerInitialMetrics}>
+          <SafeAreaFrameContext.Provider value={frame}>
+            <SafeAreaInsetsContext.Provider value={insets}>
+              {content}
+            </SafeAreaInsetsContext.Provider>
+          </SafeAreaFrameContext.Provider>
+        </SafeAreaProvider>
+      </ThemeProvider>
+    );
+  }
+
+  return (
+    <ThemeProvider>
+      <SafeAreaProvider initialMetrics={providerInitialMetrics}>{content}</SafeAreaProvider>
+    </ThemeProvider>
+  );
+}
       </ToastProvider>
     </GestureHandlerRootView>
   );
